@@ -1,11 +1,21 @@
 package cs567.particles;
 
 import javax.media.opengl.GL;
+import javax.vecmath.Vector3d;
 
 public class GravitationalForce implements Force {
 
+private ParticleSystem PS;
+	
+	public GravitationalForce(ParticleSystem pS) {
+		PS = pS;
+	}
+
 	public void applyForce() {
-		// TODO Auto-generated method stub
+		Vector3d g = new Vector3d(0,-Constants.GRAVITY,0);
+		for (Particle p : PS.P){
+			p.f.add(g);
+		}
 
 	}
 
@@ -15,8 +25,6 @@ public class GravitationalForce implements Force {
 	}
 
 	public ParticleSystem getParticleSystem() {
-		// TODO Auto-generated method stub
-		return null;
+		return PS;
 	}
-
 }
