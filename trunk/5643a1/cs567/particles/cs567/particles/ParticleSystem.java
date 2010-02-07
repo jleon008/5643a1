@@ -43,7 +43,7 @@ public class ParticleSystem //implements Serializable
      * @param p0 Undeformed/material position. 
      * @return Reference to new Particle.
      */
-    public synchronized Particle createParticle(Point2d p0) 
+    public synchronized Particle createParticle(Point3d p0) 
     {
 	Particle newP = new Particle(p0);
 	P.add(newP);
@@ -55,7 +55,7 @@ public class ParticleSystem //implements Serializable
      * (deformed) position.
      * @return Nearest particle, or null if no particles. 
      */
-    public synchronized Particle getNearestParticle(Point2d x)
+    public synchronized Particle getNearestParticle(Point3d x)
     {
 	Particle minP      = null;
 	double   minDistSq = Double.MAX_VALUE;
@@ -76,8 +76,8 @@ public class ParticleSystem //implements Serializable
     {
 	for(Particle p : P)  {
 	    p.x.set(p.x0);
-	    p.v.set(0,0);
-	    p.f.set(0,0);
+	    p.v.set(0,0,0);
+	    p.f.set(0,0,0);
 	    p.setHighlight(false);
 	}
 	time = 0;
@@ -90,7 +90,7 @@ public class ParticleSystem //implements Serializable
     public synchronized void advanceTime(double dt)
     {
 	/// Clear force accumulators:
-	for(Particle p : P)  p.f.set(0,0);
+	for(Particle p : P)  p.f.set(0,0,0);
 
 	{/// Gather forces: (TODO)
 	    for(Force force : F) {
@@ -113,7 +113,7 @@ public class ParticleSystem //implements Serializable
 
 	    /// APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
 	    if(p.isPinned()) {
-		p.v.set(0,0);
+		p.v.set(0,0,0);
 		p.x.set(p.x0);
 	    }
 	}

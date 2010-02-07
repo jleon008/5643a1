@@ -35,8 +35,8 @@ public class SpringForce2Particle implements Force
 	float g = 0.5f;
 	gl.glColor3f(g,g,g);//gray
 	gl.glBegin(GL.GL_LINES);
-	gl.glVertex2d(p1.x.x, p1.x.y);
-	gl.glVertex2d(p2.x.x, p2.x.y);
+	gl.glVertex3d(p1.x.x, p1.x.y, p1.x.z);
+	gl.glVertex3d(p2.x.x, p2.x.y, p2.x.z);
 	gl.glEnd();	
     }
 
