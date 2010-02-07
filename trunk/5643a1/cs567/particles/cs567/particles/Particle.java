@@ -3,131 +3,129 @@ package cs567.particles;
 import javax.vecmath.*;
 import javax.media.opengl.*;
 
-
-
-/** 
- * Simple particle implementation, with miscellaneous adornments. 
+/**
+ * Simple particle implementation, with miscellaneous adornments.
  * 
  * @author Doug James, January 2007
  */
-public class Particle
-{
-    /** Radius of particle's circle graphic. */
-    public static final double PARTICLE_RADIUS = 0.015;
+public class Particle {
+	/** Radius of particle's circle graphic. */
+	public static final double PARTICLE_RADIUS = 0.015;
 
-    /** Display list index. */
-    private static int PARTICLE_DISPLAY_LIST = -1;
+	/** Display list index. */
+	private static int PARTICLE_DISPLAY_LIST = -1;
 
-    /** Highlighted appearance if true, otherwise white. */
-    private boolean highlight = false;
+	/** Highlighted appearance if true, otherwise white. */
+	private boolean highlight = false;
 
-    /** If true, then particle is pinned in space. */
-    private boolean pin = false;
+	/** If true, then particle is pinned in space. */
+	private boolean pin = false;
 
-    /** Default mass. */
-    double   m = Constants.PARTICLE_MASS;
+	/** Default mass. */
+	double m = Constants.PARTICLE_MASS;
 
-    /** Deformed Position. */
-    Point3d  x = new Point3d();
+	/** Deformed Position. */
+	Point3d x = new Point3d();
 
-    /** Undeformed/material Position. */
-    Point3d  x0 = new Point3d();
+	/** Undeformed/material Position. */
+	Point3d x0 = new Point3d();
 
-    /** Velocity. */
-    Vector3d v = new Vector3d();
+	/** Velocity. */
+	Vector3d v = new Vector3d();
 
-    /** Force accumulator. */
-    Vector3d f = new Vector3d();
+	/** Force accumulator. */
+	Vector3d f = new Vector3d();
 
-    /** 
-     * Constructs particle with the specified material/undeformed
-     * coordinate, p0.
-     */
-    Particle(Point3d x0) 
-    {
-	this.x0.set(x0);
-	x.set(x0);
-    }
-
-    /** Draws circular particle using a display list. */
-    public void display(GL gl)
-    {
-	if(PARTICLE_DISPLAY_LIST < 0) {// MAKE DISPLAY LIST:
-	    int displayListIndex = gl.glGenLists(1);
-	    gl.glNewList(displayListIndex, GL.GL_COMPILE);
-	    drawParticle(gl, new Point3d());///particle at origin
-	    gl.glEndList();
-	    System.out.println("MADE LIST "+displayListIndex+" : "+gl.glIsList(displayListIndex));
-	    PARTICLE_DISPLAY_LIST = displayListIndex;
+	/**
+	 * Constructs particle with the specified material/undeformed coordinate,
+	 * p0.
+	 */
+	Particle(Point3d x0) {
+		this.x0.set(x0);
+		x.set(x0);
 	}
 
-	/// COLOR: DEFAULT WHITE; GREEN IF HIGHLIGHTED; ADD RED IF PINNED
-	Color3f c = new Color3f(1,1,1);//default: white
-	if(pin)       { 
-	    c.x = 1f;//add red
-	    c.y *= 0.2f;
-	    c.z = 0;
+	/** Draws circular particle using a display list. */
+	public void display(GL gl) {
+		if (PARTICLE_DISPLAY_LIST < 0) {// MAKE DISPLAY LIST:
+			int displayListIndex = gl.glGenLists(1);
+			gl.glNewList(displayListIndex, GL.GL_COMPILE);
+			drawParticle(gl, new Point3d());// /particle at origin
+			gl.glEndList();
+			System.out.println("MADE LIST " + displayListIndex + " : "
+					+ gl.glIsList(displayListIndex));
+			PARTICLE_DISPLAY_LIST = displayListIndex;
+		}
+
+		// / COLOR: DEFAULT WHITE; GREEN IF HIGHLIGHTED; ADD RED IF PINNED
+		Color3f c = new Color3f(1, 1, 1);// default: white
+		if (pin) {
+			c.x = 1f;// add red
+			c.y *= 0.2f;
+			c.z = 0;
+		}
+		if (highlight) {
+			c.y = 1;
+			c.z = 0;
+		}
+
+		gl.glColor3f(c.x, c.y, c.z);
+
+		// / DRAW ORIGIN-CIRCLE TRANSLATED TO "p":
+		gl.glPushMatrix();
+		gl.glTranslated(x.x, x.y, 0);
+		gl.glCallList(PARTICLE_DISPLAY_LIST);
+		gl.glPopMatrix();
 	}
-	if(highlight) {
-	    c.y = 1;
-	    c.z = 0;
+
+	/** Specifies whether particle should be drawn highlighted. */
+	public void setHighlight(boolean highlight) {
+		this.highlight = highlight;
 	}
 
-	gl.glColor3f(c.x, c.y, c.z);
+	/** True if particle should be drawn highlighted. */
+	public boolean getHighlight() {
+		return highlight;
+	}
 
-	/// DRAW ORIGIN-CIRCLE TRANSLATED TO "p":
-	gl.glPushMatrix();
-	gl.glTranslated(x.x, x.y, 0);
-	gl.glCallList(PARTICLE_DISPLAY_LIST);
-	gl.glPopMatrix();
-    }
+	/**
+	 * Specifies whether or not this particle is fixed in space via a pin
+	 * constraint. (Should probably be elsewhere in a generic constraint list).
+	 */
+	public void setPin(boolean fix) {
+		pin = fix;
+	}
 
-    /** Specifies whether particle should be drawn highlighted. */
-    public void setHighlight(boolean highlight) { 
-	this.highlight = highlight;   
-    }
-    /** True if particle should be drawn highlighted. */
-    public boolean getHighlight() { 
-	return highlight; 
-    }
+	/** Returns true if currently pinned. */
+	public boolean isPinned() {
+		return pin;
+	}
 
-    /** Specifies whether or not this particle is fixed in space via a
-     * pin constraint. (Should probably be elsewhere in a generic
-     * constraint list). */
-    public void setPin(boolean fix) { pin = fix; }
+	/**
+	 * Draws a canonical circular particle.
+	 */
+	private static void drawParticle(GL gl, Point3d p) {
+		double radius = PARTICLE_RADIUS;
 
-    /** Returns true if currently pinned. */
-    public boolean isPinned() { return pin; }
+		double vectorY1 = p.y;
+		double vectorX1 = p.x;
+		double vectorZ1 = p.z;
 
-    
-    /** 
-     * Draws a canonical circular particle.
-     */
-    private static void drawParticle(GL gl, Point3d p)
-    {
-	double radius = PARTICLE_RADIUS;
-
-	double vectorY1 = p.y;
-	double vectorX1 = p.x;
-	double vectorZ1 = p.z;
- 
-	gl.glBegin(GL.GL_TRIANGLES);
-	int N = 45;
-	for(int i=0; i<=N; i++)
-	    {
-		double angle   = ((double)i) * 2. * Math.PI / (double)N;
-		double vectorX = p.x + radius*Math.sin(angle);
-		double vectorY = p.y + radius*Math.cos(angle);
-		double vectorZ = p.z + 0; //TODO: 3d-ify
-		gl.glVertex3d(p.x,p.y,p.z);
-		gl.glVertex3d(vectorX1,vectorY1,vectorZ1);
-		gl.glVertex3d(vectorX,vectorY,vectorZ);
-		vectorY1 = vectorY;
-		vectorX1 = vectorX;
-		vectorZ1 = vectorZ;
-	    }
-	gl.glEnd();
-    }
-
+		gl.glBegin(GL.GL_TRIANGLES);
+		int N = 45;
+		for (int i = 0; i <= N; i++) {
+			double angle = ((double) i) * 2. * Math.PI / (double) N;
+			double vectorX = p.x + radius * Math.sin(angle);
+			double vectorY = p.y + radius * Math.cos(angle);
+			double vectorZ = p.z + 0; // TODO: 3d-ify
+			gl.glVertex3d(p.x, p.y, p.z);
+			gl.glVertex3d(vectorX1, vectorY1, vectorZ1);
+			gl.glVertex3d(vectorX, vectorY, vectorZ);
+			vectorY1 = vectorY;
+			vectorX1 = vectorX;
+			vectorZ1 = vectorZ;
+		}
+		gl.glEnd();
+	}
 
 }
