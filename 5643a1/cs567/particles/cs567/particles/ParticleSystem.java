@@ -10,7 +10,8 @@ import javax.media.opengl.*;
  * 
  * @author Doug James, January 2007
  */
-public class ParticleSystem implements DynamicalSystem // implements Serializable
+public class ParticleSystem implements DynamicalSystem // implements
+														// Serializable
 {
 	/** Current simulation time. */
 	double time = 0;
@@ -91,28 +92,11 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 	 * Incomplete/Debugging implementation of Forward-Euler step. WARNING:
 	 * Contains buggy debugging forces.
 	 */
-	public synchronized void advanceTime(double dt) {
-		// / Clear force accumulators:
-		for (Particle p : P)
-			p.f.set(0, 0, 0);
-
-		{// / Gather forces: (TODO)
-			for (Force force : F) {
-				force.applyForce();
-			}
-		}
+	public synchronized void advanceTime(double dt, Integrator i) {
+		updateForces();
 
 		// / TIME-STEP: (Forward Euler for now):
-		for (Particle p : P) {
-			p.v.scaleAdd(dt, p.f, p.v); // p.v += dt * p.f;
-			p.x.scaleAdd(dt, p.v, p.x); // p.x += dt * p.v;
-
-			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
-			if (p.isPinned()) {
-				p.v.set(0, 0, 0);
-				p.x.set(p.x0);
-			}
-		}
+		i.advanceTime(dt, this);
 
 		time += dt;
 	}
@@ -133,35 +117,45 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 	@Override
 	public void derivEval() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public Iterable<Force> getForces() {
-		
+
 		return F;
 	}
 
 	@Override
 	public Iterable<Particle> getParticles() {
-		
+
 		return P;
 	}
 
 	@Override
 	public double getTime() {
-		
+
 		return time;
 	}
 
 	@Override
 	public void setTime(double time) {
-		this.time = time;;
+		this.time = time;
+		;
 	}
 
 	@Override
 	public void updateForces() {
 		// TODO Auto-generated method stub
+		// / Clear force accumulators:
+		for (Particle p : P)
+			p.f.set(0, 0, 0);
+
+		{// / Gather forces: (TODO)
+			for (Force force : F) {
+				force.applyForce();
+			}
+		}
 	}
 
 }

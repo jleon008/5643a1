@@ -35,7 +35,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 	private int width, height;
 
 	/** The single ParticleSystem reference. */
-	ParticleSystem PS;
+	ParticleSystem PS; // TODO use DynamicalSystem
+	Integrator I;
 
 	/**
 	 * Object that handles all GUI and user interactions of building Task
@@ -49,6 +50,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
 		// PS.createParticle(new Point3d(.5, .5));
+		I = new Integrator_Midpoint();
 	}
 
 	/**
@@ -138,7 +140,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		orthoMap = new OrthoMap(width, height);// Hide grungy details in
-												// OrthoMap
+		// OrthoMap
 		orthoMap.apply_glOrtho(gl);
 
 		// / GET READY TO DRAW:
@@ -164,7 +166,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			gl.glVertex3d(1, 1, 0);
 			gl.glVertex3d(0, 1, 0);
 			gl.glVertex3d(0, 0, 0);
-			//todo draw other sides of box
+			// todo draw other sides of box
 			gl.glEnd();
 		}
 
@@ -178,7 +180,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 	/** Interaction central: Handles windowing/mouse events, and building state. */
 	class BuilderGUI implements MouseListener, MouseMotionListener// ,
-																	// KeyListener
+	// KeyListener
 	{
 		boolean simulate = false;
 
@@ -225,13 +227,13 @@ public class ParticleSystemBuilder implements GLEventListener {
 			// properly)
 			if (simulate) {
 				if (false) {// ONE EULER STEP
-					PS.advanceTime(DT);
+					PS.advanceTime(DT, I);
 				} else {// MULTIPLE STEPS FOR STABILITY WITH FORWARD EULER
-						// (UGH!)
+					// (UGH!)
 					int nSteps = N_STEPS_PER_FRAME;
 					double dt = DT / (double) nSteps;
 					for (int k = 0; k < nSteps; k++) {
-						PS.advanceTime(dt);// /
+						PS.advanceTime(dt, I);// /
 					}
 				}
 
@@ -481,7 +483,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				// FIND NEAREST PARTICLE:
 				cursorP = getPoint3d(e);// cursor position
 				p1 = PS.getNearestParticle(cursorP); // / = constant (since at
-														// rest)
+				// rest)
 				p2 = null;
 			}
 
@@ -497,7 +499,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			public void mouseReleased(MouseEvent e) {
 				cursorP = getPoint3d(e);// cursor position
 				p2 = PS.getNearestParticle(cursorP); // / = constant (since at
-														// rest)
+				// rest)
 				if (p1 != p2) {// make force object
 					SpringForce2Particle newForce = new SpringForce2Particle(
 							p1, p2, PS);// params
@@ -590,7 +592,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 					PS.addForce(new SpringForce2Particle(p1, p2, PS));
 
 					if (hairParticles.size() > 1) {// / ADD BENDING SPRING TO
-													// p0-p1-p2
+						// p0-p1-p2
 						Particle p0 = hairParticles
 								.get(hairParticles.size() - 2);
 						PS.addForce(new SpringForceBending(p0, p1, p2, PS));
@@ -619,8 +621,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 			public void mousePressed(MouseEvent e) {
 				Point3d cursorP = getPoint3d(e);
 				Particle p1 = PS.getNearestParticle(cursorP); // / = constant
-																// (since at
-																// rest)
+				// (since at
+				// rest)
 				if (p1 != null) {// TOGGLE PIN:
 					p1.setPin(!p1.isPinned());
 				}

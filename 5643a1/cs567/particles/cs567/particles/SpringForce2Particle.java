@@ -12,7 +12,6 @@ public class SpringForce2Particle implements Force {
 	Particle p1;
 	Particle p2;
 	ParticleSystem PS;
-	double RestDistance;
 
 	SpringForce2Particle(Particle p1, Particle p2, ParticleSystem PS) {
 		if (p1 == null || p2 == null)
@@ -21,15 +20,16 @@ public class SpringForce2Particle implements Force {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.PS = PS;
-		RestDistance = p1.x.distance(p2.x);
+
 	}
 
 	public void applyForce() {
+		double restDistance = p1.x0.distance(p2.x0);
 		// / TODO: Accumulate spring/damper forces into p1.f and p2.f ...
 		double length = p2.x.distance(p1.x);
 		Vector3d lengthV = new Vector3d();
 		lengthV.sub(p1.x, p2.x);
-		double f = -(Constants.STIFFNESS_STRETCH * (length - RestDistance) + Constants.SPRING_DAMPING
+		double f = -(Constants.STIFFNESS_STRETCH * (length - restDistance) + Constants.SPRING_DAMPING
 				* p1.v.dot(lengthV));
 		lengthV.scale(f / length);
 		p1.f.add(lengthV);
