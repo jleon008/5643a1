@@ -28,22 +28,22 @@ public class Particle
     double   m = Constants.PARTICLE_MASS;
 
     /** Deformed Position. */
-    Point2d  x = new Point2d();
+    Point3d  x = new Point3d();
 
     /** Undeformed/material Position. */
-    Point2d  x0 = new Point2d();
+    Point3d  x0 = new Point3d();
 
     /** Velocity. */
-    Vector2d v = new Vector2d();
+    Vector3d v = new Vector3d();
 
     /** Force accumulator. */
-    Vector2d f = new Vector2d();
+    Vector3d f = new Vector3d();
 
     /** 
      * Constructs particle with the specified material/undeformed
      * coordinate, p0.
      */
-    Particle(Point2d x0) 
+    Particle(Point3d x0) 
     {
 	this.x0.set(x0);
 	x.set(x0);
@@ -55,7 +55,7 @@ public class Particle
 	if(PARTICLE_DISPLAY_LIST < 0) {// MAKE DISPLAY LIST:
 	    int displayListIndex = gl.glGenLists(1);
 	    gl.glNewList(displayListIndex, GL.GL_COMPILE);
-	    drawParticle(gl, new Point2d());///particle at origin
+	    drawParticle(gl, new Point3d());///particle at origin
 	    gl.glEndList();
 	    System.out.println("MADE LIST "+displayListIndex+" : "+gl.glIsList(displayListIndex));
 	    PARTICLE_DISPLAY_LIST = displayListIndex;
@@ -103,12 +103,13 @@ public class Particle
     /** 
      * Draws a canonical circular particle.
      */
-    private static void drawParticle(GL gl, Point2d p)
+    private static void drawParticle(GL gl, Point3d p)
     {
 	double radius = PARTICLE_RADIUS;
 
 	double vectorY1 = p.y;
 	double vectorX1 = p.x;
+	double vectorZ1 = p.z;
  
 	gl.glBegin(GL.GL_TRIANGLES);
 	int N = 45;
@@ -117,11 +118,13 @@ public class Particle
 		double angle   = ((double)i) * 2. * Math.PI / (double)N;
 		double vectorX = p.x + radius*Math.sin(angle);
 		double vectorY = p.y + radius*Math.cos(angle);
-		gl.glVertex2d(p.x,p.y);
-		gl.glVertex2d(vectorX1,vectorY1);
-		gl.glVertex2d(vectorX,vectorY);
+		double vectorZ = p.z + 0; //TODO: 3d-ify
+		gl.glVertex3d(p.x,p.y,p.z);
+		gl.glVertex3d(vectorX1,vectorY1,vectorZ1);
+		gl.glVertex3d(vectorX,vectorY,vectorZ);
 		vectorY1 = vectorY;
-		vectorX1 = vectorX;	
+		vectorX1 = vectorX;
+		vectorZ1 = vectorZ;
 	    }
 	gl.glEnd();
     }

@@ -11,7 +11,7 @@ public class Utils
     /**
      * sum += scale*v
      */
-    public static void acc(Tuple2d sum, double scale, Tuple2d v)
+    public static void acc(Tuple3d sum, double scale, Tuple3d v)
     {
 	sum.x += scale * v.x;
 	sum.y += scale * v.y;

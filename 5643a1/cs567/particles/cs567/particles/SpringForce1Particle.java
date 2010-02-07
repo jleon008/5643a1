@@ -11,10 +11,10 @@ import javax.media.opengl.*;
 public class SpringForce1Particle implements Force
 {
     Particle p1;
-    Point2d  x2;
+    Point3d  x2;
     ParticleSystem PS;
 
-    SpringForce1Particle(Particle p1, Point2d x2, ParticleSystem PS)
+    SpringForce1Particle(Particle p1, Point3d x2, ParticleSystem PS)
     {
 	if(p1==null || x2==null) throw new NullPointerException("p1="+p1+", x2="+x2);
 
@@ -23,7 +23,7 @@ public class SpringForce1Particle implements Force
 	this.PS = PS;
     }
 
-    public void updatePoint(Point2d x) {
+    public void updatePoint(Point3d x) {
 	x2.set(x);
     }
 
@@ -38,8 +38,8 @@ public class SpringForce1Particle implements Force
 	/// DRAW A LINE:
 	gl.glColor3f(0,1,0);
 	gl.glBegin(GL.GL_LINES);
-	gl.glVertex2d(p1.x.x, p1.x.y);
-	gl.glVertex2d(x2.x,   x2.y);
+	gl.glVertex3d(p1.x.x, p1.x.y, p1.x.z);
+	gl.glVertex3d(x2.x,   x2.y,   x2.z);
 	gl.glEnd();	
     }
 
