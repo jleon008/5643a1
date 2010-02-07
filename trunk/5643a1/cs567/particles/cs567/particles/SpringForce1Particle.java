@@ -13,6 +13,8 @@ public class SpringForce1Particle implements Force
     Particle p1;
     Point3d  x2;
     ParticleSystem PS;
+    
+    static final double REST_DISTANCE = 0;
 
     SpringForce1Particle(Particle p1, Point3d x2, ParticleSystem PS)
     {
@@ -30,7 +32,12 @@ public class SpringForce1Particle implements Force
     public void applyForce()
     {
 	/// TODO: Accumulate spring/damper forces into p1.f ...
-
+    	double length = x2.distance(p1.x);
+    	Vector3d lengthV = new Vector3d();
+    	lengthV.sub(p1.x,x2);
+    	 double f = -(Constants.STIFFNESS_STRETCH * (length - REST_DISTANCE) + Constants.DAMPING_MASS * p1.v.dot(lengthV));
+    	 lengthV.scale(f / length);
+    	 p1.f.add(lengthV);
     }
 
     public void display(GL gl)
