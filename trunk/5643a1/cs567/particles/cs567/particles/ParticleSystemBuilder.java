@@ -46,6 +46,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 	/** Main constructor. Call start() to begin simulation. */
 	ParticleSystemBuilder() {
 		PS = new ParticleSystem();
+		PS.addForce(new GravitationalForce(PS));
+		PS.addForce(new ViscousDragForce(PS));
 		// PS.createParticle(new Point3d(.5, .5));
 	}
 

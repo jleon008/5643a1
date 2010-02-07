@@ -96,14 +96,6 @@ public class ParticleSystem //implements Serializable
 	    for(Force force : F) {
 		force.applyForce();
 	    }
-
- 	    // HACK: GRAVITY (NEED TO USE Force OBJECT)
- 	    for(Particle p : P)   p.f.y -= p.m * 10.f;
-
-	    // HACK:  Add some MASS-PROPORTIONAL (viscous) damping (NEED TO USE Force OBJECT)
-	    for(Particle p : P) {
-		Utils.acc(p.f,  -Constants.DAMPING_MASS * p.m, p.v);
-	    }
 	}
 
 	/// TIME-STEP: (Forward Euler for now):

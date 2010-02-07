@@ -29,7 +29,7 @@ public class SpringForce2Particle implements Force {
 		double length = p2.x.distance(p1.x);
 		Vector3d lengthV = new Vector3d();
 		lengthV.sub(p1.x, p2.x);
-		double f = -(Constants.STIFFNESS_STRETCH * (length - RestDistance) + Constants.DAMPING_MASS
+		double f = -(Constants.STIFFNESS_STRETCH * (length - RestDistance) + Constants.SPRING_DAMPING
 				* p1.v.dot(lengthV));
 		lengthV.scale(f / length);
 		p1.f.add(lengthV);
