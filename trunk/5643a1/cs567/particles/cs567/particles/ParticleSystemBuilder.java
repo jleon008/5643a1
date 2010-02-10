@@ -189,7 +189,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 		JFrame guiFrame;
 		TaskSelector taskSelector = new TaskSelector();
-
+		IntegratorSelector integratorSelector = new IntegratorSelector();
+		
 		BuilderGUI() {
 			guiFrame = new JFrame("Tasks");
 			guiFrame
@@ -206,12 +207,25 @@ public class ParticleSystemBuilder implements GLEventListener {
 					new JRadioButton("Pin Constraint", false) };
 			// new JRadioButton ("Rigid Constraint", false)};
 
+			JToggleButton[] integrators = {
+					new JRadioButton("Forward Euler", true),
+					new JRadioButton("Midpoint Method", false),
+					new JRadioButton("Symplectic Euler", false),
+					new JRadioButton("Velocity Verlet", false),	
+			};
+			
 			for (int i = 0; i < buttons.length; i++) {
 				buttonGroup.add(buttons[i]);
 				guiFrame.add(buttons[i]);
 				buttons[i].addActionListener(taskSelector);
 			}
 
+			for (int i = 0; i < integrators.length; i++) {
+				buttonGroup.add(integrators[i]);
+				guiFrame.add(integrators[i]);
+				integrators[i].addActionListener(integratorSelector);
+			}
+			
 			guiFrame.setSize(200, 200);
 			guiFrame.pack();
 			guiFrame.setVisible(true);
@@ -290,6 +304,28 @@ public class ParticleSystemBuilder implements GLEventListener {
 				}
 			}
 
+		}
+		
+		class IntegratorSelector implements ActionListener {
+			
+			public void actionPerformed(ActionEvent e) {
+				String cmd = e.getActionCommand();
+				System.out.println(cmd);
+
+				if (cmd.equals("Reset")) {
+				} else if (cmd.equals("Forward Euler")) {
+					I = new Integrator_ForwardEuler();
+				} else if (cmd.equals("Midpoint Method")) {
+					I = new Integrator_Midpoint();
+				} else if (cmd.equals("Symplectic Euler")) {
+					I = new Integrator_SymplecticEuler();
+				} else if (cmd.equals("Velocity Verlet")) {
+					I = new Integrator_VelocityVerlet();
+				} else {
+					System.out.println("UNHANDLED ActionEvent: " + e);
+				}
+			}
+			
 		}
 
 		// Methods required for the implementation of MouseListener
