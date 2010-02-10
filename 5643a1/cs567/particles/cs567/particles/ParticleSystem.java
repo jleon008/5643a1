@@ -214,7 +214,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 	public void removeFilter(Filter f) {
-
+		filters.remove(f);
 	}
 
 	
