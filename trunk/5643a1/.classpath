@@ -3,8 +3,17 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="cs567/particles"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_16"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_16/jre/lib/ext/vecmath.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_16/jre/lib/ext/jogl.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_16/jre/lib/ext/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_16/jre/lib/ext/vecmath.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Particles"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="jogl.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://www.cse.unsw.edu.au/~cs3421/jogl/javadoc_public/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Particles"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
