@@ -24,6 +24,8 @@ import com.sun.opengl.util.*;
 public class ParticleSystemBuilder implements GLEventListener {
 	private FrameExporter frameExporter;
 
+	private Map<Particle, FilterPin> pinFilters = new HashMap<Particle, FilterPin>();
+	
 	private static int N_STEPS_PER_FRAME = 500;
 
 	/** Default graphics time step size. */
@@ -51,6 +53,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS.addForce(new ViscousDragForce(PS));
 		// PS.createParticle(new Point3d(.5, .5));
 		I = new Integrator_Midpoint();
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS.getParticles()));
 	}
 
 	/**
@@ -199,6 +205,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			guiFrame.setLayout(new GridLayout(6, 1));
 
 			ButtonGroup buttonGroup = new ButtonGroup();
+			ButtonGroup integratorGroup = new ButtonGroup();
 			JToggleButton[] buttons = { new JToggleButton("Reset", false),
 					new JRadioButton("Create Particle", true),
 					new JRadioButton("Move Particle", false),
@@ -221,7 +228,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 			for (int i = 0; i < integrators.length; i++) {
-				buttonGroup.add(integrators[i]);
+				integratorGroup.add(integrators[i]);
 				guiFrame.add(integrators[i]);
 				integrators[i].addActionListener(integratorSelector);
 			}
@@ -660,7 +667,16 @@ public class ParticleSystemBuilder implements GLEventListener {
 				// (since at
 				// rest)
 				if (p1 != null) {// TOGGLE PIN:
-					p1.setPin(!p1.isPinned());
+					if (pinFilters.containsKey(p1)) {
+						PS.removeFilter(pinFilters.get(p1));
+						pinFilters.remove(p1);
+						p1.setPin(false);
+					} else {
+						FilterPin newFilter = new FilterPin(p1);
+						PS.addFilter(newFilter);
+						pinFilters.put(p1, newFilter);
+						p1.setPin(true);
+					}
 				}
 			}
 

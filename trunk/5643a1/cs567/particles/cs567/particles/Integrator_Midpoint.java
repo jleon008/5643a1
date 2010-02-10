@@ -25,12 +25,9 @@ public class Integrator_Midpoint implements Integrator {
 			p.v.scaleAdd(timestep / 2, p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
-			if (p.isPinned()) {
-				p.x.set(p.x0);
-				p.v.set(0, 0, 0);
-			}
 		}
 
+		sys.applyFilters();
 		sys.updateForces();
 
 		P = sys.getParticles();
@@ -39,12 +36,9 @@ public class Integrator_Midpoint implements Integrator {
 			p.x.scaleAdd(timestep, p.v, x_original.get(p));
 			p.v.scaleAdd(timestep, p.f, v_original.get(p));
 
-			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
-			if (p.isPinned()) {
-				p.x.set(p.x0);
-				p.v.set(0, 0, 0);
-			}
+			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v)
 		}
+		sys.applyFilters();
 
 	}
 

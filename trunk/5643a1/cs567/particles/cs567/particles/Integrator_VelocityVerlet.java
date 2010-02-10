@@ -13,11 +13,10 @@ public class Integrator_VelocityVerlet implements Integrator {
 			p.v.scaleAdd(timestep, p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
-			if (p.isPinned()) {
-				p.x.set(p.x0);
-				p.v.set(0, 0, 0);
-			}
+
 		}
+
+		sys.applyFilters();
 		
 	/*	P = sys.getParticles();
 		sys.updateForces();

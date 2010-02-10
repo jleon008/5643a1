@@ -3,12 +3,20 @@
  */
 package cs567.particles;
 
+import java.util.*;
+
 /**
  * @author Kerran
  * 
  */
 public interface DynamicalSystem {
 
+	void addFilter(Filter f);
+	
+	void removeFilter(Filter f);
+	
+	void applyFilters();
+	
 	void addForce(Force f);
 
 	void removeForce(Force f);
@@ -17,9 +25,9 @@ public interface DynamicalSystem {
 
 	void derivEval();
 
-	Iterable<Force> getForces();
+	Collection<Force> getForces();
 
-	Iterable<Particle> getParticles();
+	Collection<Particle> getParticles();
 
 	double getTime();
 
