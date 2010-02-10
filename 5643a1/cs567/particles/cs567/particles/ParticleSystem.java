@@ -16,6 +16,8 @@ public class ParticleSystem implements DynamicalSystem // implements
 	/** Current simulation time. */
 	double time = 0;
 
+	private Set<Filter> filters = new HashSet<Filter>();
+	
 	/** List of Particle objects. */
 	ArrayList<Particle> P = new ArrayList<Particle>();
 
@@ -121,13 +123,13 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 //	@Override
-	public Iterable<Force> getForces() {
+	public Collection<Force> getForces() {
 
 		return F;
 	}
 
 //	@Override
-	public Iterable<Particle> getParticles() {
+	public Collection<Particle> getParticles() {
 
 		return P;
 	}
@@ -156,6 +158,23 @@ public class ParticleSystem implements DynamicalSystem // implements
 				force.applyForce();
 			}
 		}
+	}
+
+	public void addFilter(Filter f) {
+		filters.add(f);
+		
+	}
+
+	public void removeFilter(Filter f) {
+
+	}
+
+	
+	public void applyFilters() {
+		for (Filter f : filters) {
+			f.applyFilter();	
+		}
+		
 	}
 
 }
