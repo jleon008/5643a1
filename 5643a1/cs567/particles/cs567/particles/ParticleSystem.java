@@ -13,14 +13,22 @@ import javax.media.opengl.*;
 public class ParticleSystem implements DynamicalSystem // implements
 														// Serializable
 {
+
+	private static double INTERACTION_RADIUS = 0.1;
+	
+	HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
+	
 	/** Current simulation time. */
 	double time = 0;
 
+	
+	
 	private Set<Filter> filters = new HashSet<Filter>();
 	
 	/** List of Particle objects. */
 	ArrayList<Particle> P = new ArrayList<Particle>();
 
+	
 	/** List of Force objects. */
 	ArrayList<Force> F = new ArrayList<Force>();
 
@@ -28,6 +36,16 @@ public class ParticleSystem implements DynamicalSystem // implements
 
 	/** Basic constructor. */
 	public ParticleSystem() {
+		
+		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
+		for (int i = 0; i < tot; i++) {
+			for (int j = 0; j < tot; j++) {
+				for (int k = 0; k < tot; k++) {
+					particleGrid[i][j][k] = new HashSet();
+				}
+			}
+		}
+		
 	}
 
 	/** Adds a force object (until removed) */
@@ -150,8 +168,38 @@ public class ParticleSystem implements DynamicalSystem // implements
 	public void updateForces() {
 		// TODO Auto-generated method stub
 		// / Clear force accumulators:
-		for (Particle p : P)
+		
+		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
+		for (int i = 0; i < tot; i++) {
+			for (int j = 0; j < tot; j++) {
+				for (int k = 0; k < tot; k++) {
+					particleGrid[i][j][k].clear();
+				}
+			}
+		}
+		
+		for (Particle p : P) {
 			p.f.set(0, 0, 0);
+			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
+			int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
+			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
+			particleGrid[gx][gy][gz].add(p);
+		}
+		
+		for (Particle p : P) {
+			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
+			int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
+			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
+			for (int i = Math.max(0, gx-1); i < Math.min(gx + 1, tot); i++) {
+				for (int j = Math.max(0, gy-1); j < Math.min(gy + 1, tot); j++) {
+					for (int k = Math.max(0, gz-1); k < Math.min(gz + 1, tot); k++) {
+						for (Object other : particleGrid[i][j][k]) {
+							p.interactionForce((Particle) other);
+						}
+					}
+				}
+			}
+		}
 
 		{// / Gather forces: (TODO)
 			for (Force force : F) {
