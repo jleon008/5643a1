@@ -128,4 +128,9 @@ public class Particle {
 		gl.glEnd();
 	}
 
+	public void interactionForce(Particle other) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
