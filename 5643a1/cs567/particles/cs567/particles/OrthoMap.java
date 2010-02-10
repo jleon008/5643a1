@@ -19,8 +19,6 @@ public class OrthoMap {
 	private double R;// = r*1;
 	private double B = 0;
 	private double T = 1;
-	private double F = 0;
-	private double Ba = 1;
 
 	OrthoMap(int viewportWidth, int viewportHeight) {
 		width = viewportWidth;

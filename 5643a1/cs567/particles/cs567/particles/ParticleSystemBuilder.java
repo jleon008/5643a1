@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.vecmath.*;
 
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
+
 import com.sun.opengl.util.*;
 
 /**
@@ -35,6 +37,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	JFrame frame = null;
 
 	private int width, height;
+	private float xrot, yrot;
 
 	/** The single ParticleSystem reference. */
 	ParticleSystem PS; // TODO use DynamicalSystem
@@ -95,11 +98,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 		animator.start();
 	}
 
-	private OrthoMap orthoMap;
+	private PerspectiveProjection persProj;
 
 	/** Maps mouse event into computational cell using OrthoMap. */
 	public Point3d getPoint3d(MouseEvent e) {
-		return orthoMap.getPoint3d(e);
+		return persProj.getPoint3d(e);
 	}
 
 	/** GLEventListener implementation: Initializes JOGL renderer. */
@@ -145,12 +148,16 @@ public class ParticleSystemBuilder implements GLEventListener {
 		// / SETUP ORTHOGRAPHIC PROJECTION AND MAPPING INTO UNIT CELL:
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
-		orthoMap = new OrthoMap(width, height);// Hide grungy details in
-		// OrthoMap
-		orthoMap.apply_glOrtho(gl);
+//		orthoMap = new OrthoMap(width, height);// Hide grungy details in
+//		// OrthoMap
+//		orthoMap.apply_glOrtho(gl);
+		persProj = new PerspectiveProjection(width, height);
+		persProj.apply_gluPerspective(gl);
 
 		// / GET READY TO DRAW:
 		gl.glMatrixMode(GL.GL_MODELVIEW);
+		
+		
 		gl.glLoadIdentity();
 	}
 
@@ -165,6 +172,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 		// / DRAW COMPUTATIONAL CELL BOUNDARY:
 		{
+			//front
 			gl.glBegin(GL.GL_LINE_STRIP);
 			gl.glColor3f(1, 1, 1);
 			gl.glVertex3d(0, 0, 0);
@@ -172,7 +180,36 @@ public class ParticleSystemBuilder implements GLEventListener {
 			gl.glVertex3d(1, 1, 0);
 			gl.glVertex3d(0, 1, 0);
 			gl.glVertex3d(0, 0, 0);
-			// todo draw other sides of box
+			gl.glEnd();
+			//back
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex3d(0, 0, 1);
+			gl.glVertex3d(1, 0, 1);
+			gl.glVertex3d(1, 1, 1);
+			gl.glVertex3d(0, 1, 1);
+			gl.glVertex3d(0, 0, 1);
+			gl.glEnd();
+			//4 connecting posts
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex3d(0, 0, 0);
+			gl.glVertex3d(0, 0, 1);
+			gl.glEnd();
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex3d(0, 1, 0);
+			gl.glVertex3d(0, 1, 1);
+			gl.glEnd();
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex3d(1, 0, 0);
+			gl.glVertex3d(1, 0, 1);
+			gl.glEnd();
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex3d(1, 1, 0);
+			gl.glVertex3d(1, 1, 1);
 			gl.glEnd();
 		}
 
@@ -268,6 +305,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 			// Display Task, e.g., currently drawn spring.
 			if (task != null)
 				task.display(gl);
+			
+			//rotate scene
+			//persProj.rotate(xrot, yrot);
+			//persProj.apply_gluPerspective(gl);
 		}
 
 		/**
@@ -407,6 +448,19 @@ public class ParticleSystemBuilder implements GLEventListener {
 				N_STEPS_PER_FRAME = Math.max(1, n);
 				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME
 						+ ";  dt=" + (DT / (double) N_STEPS_PER_FRAME));
+			} 
+			//rotation stuff
+			else if (key == 'w') {
+				xrot -= 0.25f;
+			}
+			else if (key == 's') {
+				xrot += 0.25f;
+			}
+			else if (key == 'a') {
+				yrot -= 0.25f;
+			}
+			else if (key == 'd') {
+				yrot += 0.25f;
 			}
 		}
 
