@@ -37,7 +37,6 @@ public class ParticleSystemBuilder implements GLEventListener {
 	JFrame frame = null;
 
 	private int width, height;
-	private float xrot, yrot;
 
 	/** The single ParticleSystem reference. */
 	ParticleSystem PS; // TODO use DynamicalSystem
@@ -112,9 +111,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 	/** GLEventListener implementation: Initializes JOGL renderer. */
 	public void init(GLAutoDrawable drawable) {
-		// DEBUG PIPELINE (can use to provide GL error feedback... disable for
-		// speed)
-		// drawable.setGL(new DebugGL(drawable.getGL()));
+		// DEBUG PIPELINE (can use to provide GL error feedback... disable for speed)
+		//drawable.setGL(new DebugGL(drawable.getGL()));
 
 		GL gl = drawable.getGL();
 		System.err.println("INIT GL IS: " + gl.getClass().getName());
@@ -150,20 +148,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 		GL gl = drawable.getGL();
 		gl.glViewport(0, 0, width, height);
 
-		// / SETUP ORTHOGRAPHIC PROJECTION AND MAPPING INTO UNIT CELL:
-		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glLoadIdentity();
-//		orthoMap = new OrthoMap(width, height);// Hide grungy details in
-//		// OrthoMap
-//		orthoMap.apply_glOrtho(gl);
+		//SETUP PERSPECTIVE PROJECTION AND MAPPING INTO UNIT CELL:
 		persProj = new PerspectiveProjection(width, height);
 		persProj.apply_gluPerspective(gl);
 
-		// / GET READY TO DRAW:
-		gl.glMatrixMode(GL.GL_MODELVIEW);
-		
-		
-		gl.glLoadIdentity();
 	}
 
 	/**
@@ -220,6 +208,9 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 		// / SIMULATE/DISPLAY HERE (Handled by BuilderGUI):
 		gui.simulateAndDisplayScene(gl);
+		
+		//update camera
+		persProj.apply_gluPerspective(gl);
 
 		if (frameExporter != null) {
 			frameExporter.writeFrame();
@@ -310,10 +301,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 			// Display Task, e.g., currently drawn spring.
 			if (task != null)
 				task.display(gl);
+
 			
-			//rotate scene
-			//persProj.rotate(xrot, yrot);
-			//persProj.apply_gluPerspective(gl);
 		}
 
 		/**
@@ -456,16 +445,19 @@ public class ParticleSystemBuilder implements GLEventListener {
 			} 
 			//rotation stuff
 			else if (key == 'w') {
-				xrot -= 0.25f;
+				persProj.rotate(-30, 0);
 			}
 			else if (key == 's') {
-				xrot += 0.25f;
+				persProj.rotate(30, 0);
 			}
 			else if (key == 'a') {
-				yrot -= 0.25f;
+				persProj.rotate(0, -30);
 			}
 			else if (key == 'd') {
-				yrot += 0.25f;
+				persProj.rotate(0, 30);
+			}
+			else if (key == 'x'){
+				persProj.resetCamera();
 			}
 		}
 

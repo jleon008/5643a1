@@ -23,7 +23,11 @@ public class PerspectiveProjection extends OrthoMap {
 	private double eyeX = 0.5;
 	private double eyeY = 0.5;
 	private double eyeZ = d;
-	private double xrot, yrot;
+	
+	//for threadsafe picking
+	double[] model = new double[16];
+	double[] proj = new double[16];
+	int[] view = new int[4];
 	
 	public PerspectiveProjection(int viewportWidth, int viewportHeight)
 		 {
@@ -41,9 +45,23 @@ public class PerspectiveProjection extends OrthoMap {
 	public void apply_gluPerspective(GL gl) {
 		
 		GLU glu = new GLU();
-		glu.gluPerspective(45.0f, (double)width/height, 0, 5);
+		
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glLoadIdentity();
+		
+		glu.gluPerspective(45.0f, (double)width/height, 0, 4);
+		
+		// / GET READY TO DRAW:
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glLoadIdentity();
 
 		glu.gluLookAt(eyeX, eyeY, eyeZ, 0.5, 0.5, 0.5, 0, 1, 0);
+		//System.out.printf("%f, %f, %f\n", eyeX, eyeY, eyeZ);
+		
+		gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, model,0);
+		gl.glGetDoublev(GL.GL_PROJECTION_MATRIX, proj,0);
+		gl.glGetIntegerv(GL.GL_VIEWPORT, view,0);
+		//gl.glReadPixels(x, y, width, height, format, type, pixels_buffer_offset)
 	}
 	
 	@Override
@@ -51,38 +69,63 @@ public class PerspectiveProjection extends OrthoMap {
 		// TODO Auto-generated method stub
 		Dimension size = e.getComponent().getSize();
 
-		double x = (double) e.getX() / (double) size.width; 
-		x *= (r + 2 * eps);
-		x -= eps;
-
-		double y = 1. - (double) e.getY() / (double) size.height;
-		y *= (1 + 2 * eps);
-		y -= eps;
+//		double x = (double) e.getX() / (double) size.width; 
+//		x *= (r + 2 * eps);
+//		x -= eps;
+//
+//		double y = 1. - (double) e.getY() / (double) size.height;
+//		y *= (1 + 2 * eps);
+//		y -= eps;
 		
-		Point3d p = new Point3d(x, y, 0);
+		GLU glu = new GLU();
+		
+		double realy = view[3] - e.getY() - 1;
+		realy /= size.height;
+		double realx = e.getX();
+		realx /= size.width;
+		
+		double[] objPos2 = new double[4];
+		
+		double[][] cube = new double[8][4];
+		for(int i = 0; i < 8; i++) {
+			boolean result0 = glu.gluProject(i % 2, (i>>1)%2 , (i>>2)%2 , model, 0, proj, 0, view, 0, cube[i], 0);
+		}
+		
+		//not working... don't know why
+		//boolean result = glu.gluUnProject(realx, realy, 0.0, model, 0, proj, 0, view, 0, objPos, 0);
+		boolean result2 = glu.gluUnProject(realx, realy, 0.0, model, 0, proj, 0, view, 0, objPos2, 0);
+		
+
+		
+		Point3d p = new Point3d(realx,realy,0.5);
 		// p.clampMax(1);
 		// p.clampMin(0);
-		System.out.println(p);
 		return p;
 	}
 
-	public void rotate(float xrotation, float yrotation) {
-		 xrot = xrotation - xrot;
-		 yrot = yrotation - yrot;
+	public void rotate(double xrotation, double yrotation) {
+		xrotation /= 180/Math.PI;
+		yrotation /= 180/Math.PI;
+		
+		//shift eye to origin based
+		eyeX -= 0.5;
+		eyeY -= 0.5;
+		eyeZ -= 0.5;
+		
 		 Matrix3d currentEye = new Matrix3d(
 				 eyeX, eyeX, eyeX,
 				 eyeY, eyeY, eyeY,
 				 eyeZ, eyeZ, eyeZ);
 		 
-		 double sinx =  Math.sin(xrot*180/Math.PI);
-		 double cosx = Math.cos(xrot*180/Math.PI);
+		 double sinx =  Math.sin(xrotation);
+		 double cosx = Math.cos(xrotation);
 		 Matrix3d Rx = new Matrix3d(
 				 1, 0, 0,
 				 0, cosx, -sinx, 
 				 0, sinx, cosx);
 		 
-		 double siny =  Math.sin(yrot*180/Math.PI);
-		 double cosy = Math.cos(yrot*180/Math.PI);
+		 double siny =  Math.sin(yrotation);
+		 double cosy = Math.cos(yrotation);
 		 Matrix3d Ry = new Matrix3d(
 				 cosy, 0, siny,
 				 0, 1, 0, 
@@ -95,6 +138,16 @@ public class PerspectiveProjection extends OrthoMap {
 		 eyeY = Rx.m10;
 		 eyeZ = Rx.m20;
 		 
+			//shift eye back to center of cube
+			eyeX += 0.5;
+			eyeY += 0.5;
+			eyeZ += 0.5;
+	}
+
+	public void resetCamera() {
+		eyeX = 0.5;
+		eyeY = 0.5;
+		eyeZ = d;
 	}
 
 }
