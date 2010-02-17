@@ -141,14 +141,14 @@ public class Particle {
 		
 		int m = 5;
 		int n = 3;
-		double r0= PARTICLE_RADIUS;
+		double r0= 2*PARTICLE_RADIUS;
 		double cr = r0;
 		double cd = r0;
-		double b1 = .00001;
-		double b2 = b1/Math.pow(PARTICLE_RADIUS, m-n); //*Math.pow(r0, n-m);
+		double b1 = 500;
+		double b2 = b1; //*Math.pow(r0, n-m);
 		double sumR = 2*PARTICLE_RADIUS;
 		double sr = 1;
-		double sd = .8;
+		double sd = .01;
 		
 		/*sr = dSquared/(cr*cr*(sumR)*(sumR));
 		sd = dSquared/(cd*cd*(sumR)*(sumR));
@@ -160,7 +160,7 @@ public class Particle {
 		f.set(posDif);
 		f.normalize();
 		
-		double sf = -sr*(b1/Math.pow(d, m) - b2/Math.pow(d, n)) + sd*(velDif.dot(f));
+		double sf = -sr*(b1/Math.pow(d/r0, m) - b2/Math.pow(d/r0, n)) + sd*(velDif.dot(f));
 		f.scale(sf);
 		other.f.add(f);
 		
