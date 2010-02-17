@@ -14,7 +14,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 														// Serializable
 {
 
-	private static double INTERACTION_RADIUS = 0.1;
+	private static double INTERACTION_RADIUS = .1;
 	
 	HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
 	
@@ -190,11 +190,13 @@ public class ParticleSystem implements DynamicalSystem // implements
 			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
 			int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
 			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
-			for (int i = Math.max(0, gx-1); i < Math.min(gx + 1, tot); i++) {
-				for (int j = Math.max(0, gy-1); j < Math.min(gy + 1, tot); j++) {
-					for (int k = Math.max(0, gz-1); k < Math.min(gz + 1, tot); k++) {
+			for (int i = Math.max(0, gx-1); i < Math.min(gx + 2, tot); i++) {
+				for (int j = Math.max(0, gy-1); j < Math.min(gy + 2, tot); j++) {
+					for (int k = Math.max(0, gz-1); k < Math.min(gz + 2, tot); k++) {
 						for (Object other : particleGrid[i][j][k]) {
-							p.interactionForce((Particle) other);
+							if (!other.equals(p)) {
+								p.interactionForce((Particle) other);
+							}
 						}
 					}
 				}

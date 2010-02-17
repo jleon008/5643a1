@@ -10,7 +10,7 @@ import javax.media.opengl.*;
  */
 public class Particle {
 	/** Radius of particle's circle graphic. */
-	public static final double PARTICLE_RADIUS = 0.015;
+	public static final double PARTICLE_RADIUS = 0.05;
 
 	/** Display list index. */
 	private static int PARTICLE_DISPLAY_LIST = -1;
@@ -129,7 +129,40 @@ public class Particle {
 	}
 
 	public void interactionForce(Particle other) {
-		// TODO Auto-generated method stub
+		// ok, now for the fun stuff...
+		Vector3d posDif = new Vector3d();
+		posDif.sub(x, other.x);
+		
+		Vector3d velDif = new Vector3d();
+		velDif.sub(v, other.v);
+		
+		double d = posDif.length();
+		double dSquared =d*d;
+		
+		int m = 5;
+		int n = 3;
+		double r0= PARTICLE_RADIUS;
+		double cr = r0;
+		double cd = r0;
+		double b1 = .00001;
+		double b2 = b1/Math.pow(PARTICLE_RADIUS, m-n); //*Math.pow(r0, n-m);
+		double sumR = 2*PARTICLE_RADIUS;
+		double sr = 1;
+		double sd = .8;
+		
+		/*sr = dSquared/(cr*cr*(sumR)*(sumR));
+		sd = dSquared/(cd*cd*(sumR)*(sumR));
+		
+		sr = Math.max(0, 1 - sr);
+		sd = Math.max(0, 1 - sd);*/
+		
+		Vector3d f = new Vector3d();
+		f.set(posDif);
+		f.normalize();
+		
+		double sf = -sr*(b1/Math.pow(d, m) - b2/Math.pow(d, n)) + sd*(velDif.dot(f));
+		f.scale(sf);
+		other.f.add(f);
 		
 	}
 
