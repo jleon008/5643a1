@@ -172,7 +172,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
 		for (int i = 0; i < tot; i++) {
 			for (int j = 0; j < tot; j++) {
-				for (int k = 0; k < tot; k++) {
+				for (int k = 0; k < 1; k++) {
 					particleGrid[i][j][k].clear();
 				}
 			}
@@ -192,7 +192,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
 			for (int i = Math.max(0, gx-1); i < Math.min(gx + 2, tot); i++) {
 				for (int j = Math.max(0, gy-1); j < Math.min(gy + 2, tot); j++) {
-					for (int k = Math.max(0, gz-1); k < Math.min(gz + 2, tot); k++) {
+					for (int k = Math.max(0, gz-1); k < Math.min(gz + 2, 1); k++) {
 						for (Object other : particleGrid[i][j][k]) {
 							if (!other.equals(p)) {
 								p.interactionForce((Particle) other);
