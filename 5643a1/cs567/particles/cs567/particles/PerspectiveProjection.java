@@ -49,7 +49,7 @@ public class PerspectiveProjection extends OrthoMap {
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		
-		glu.gluPerspective(45.0f, (double)width/height, 0, 4);
+		glu.gluPerspective(45.0f, (double)width/(double)height, 1, 4);
 		
 		// / GET READY TO DRAW:
 		gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -57,10 +57,11 @@ public class PerspectiveProjection extends OrthoMap {
 
 		glu.gluLookAt(eyeX, eyeY, eyeZ, 0.5, 0.5, 0.5, 0, 1, 0);
 		//System.out.printf("%f, %f, %f\n", eyeX, eyeY, eyeZ);
-		
+
+		gl.glGetIntegerv(GL.GL_VIEWPORT, view,0);
 		gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, model,0);
 		gl.glGetDoublev(GL.GL_PROJECTION_MATRIX, proj,0);
-		gl.glGetIntegerv(GL.GL_VIEWPORT, view,0);
+
 		//gl.glReadPixels(x, y, width, height, format, type, pixels_buffer_offset)
 	}
 	
@@ -80,24 +81,38 @@ public class PerspectiveProjection extends OrthoMap {
 		GLU glu = new GLU();
 		
 		double realy = view[3] - e.getY() - 1;
-		realy /= size.height;
+		//realy /= size.height;
 		double realx = e.getX();
-		realx /= size.width;
+		//realx /= size.width;
 		
 		double[] objPos2 = new double[4];
+//		
+//		double[][] cube = new double[8][4];
+//		for(int i = 0; i < 8; i++) {
+//			boolean result0 = glu.gluProject(i % 2, (i>>1)%2 , (i>>2)%2 , model, 0, proj, 0, view, 0, cube[i], 0);
+//		}
+//		
+//		double[] center = new double[3];
+//		glu.gluProject(0.5, 0.5,0.5, model, 0, proj, 0, view, 0, center, 0);
 		
-		double[][] cube = new double[8][4];
-		for(int i = 0; i < 8; i++) {
-			boolean result0 = glu.gluProject(i % 2, (i>>1)%2 , (i>>2)%2 , model, 0, proj, 0, view, 0, cube[i], 0);
-		}
+//		double offsetX = realx - center[0];
+//		double offsetY = realy - center[1];
+//		
+//		offsetX /= size.width;
+//		offsetY /= size.height;
 		
-		//not working... don't know why
+		//not working... don't know why - proj is singular, non-invertible
 		//boolean result = glu.gluUnProject(realx, realy, 0.0, model, 0, proj, 0, view, 0, objPos, 0);
-		boolean result2 = glu.gluUnProject(realx, realy, 0.0, model, 0, proj, 0, view, 0, objPos2, 0);
+		
+		
+		//todo play with 0.25*d to get the z (distance from camera) value correct
+		boolean result2 = glu.gluUnProject(realx, realy, 0.25*d, model, 0, proj, 0, view, 0, objPos2, 0);
+//		boolean result7 = glu.isFunctionAvailable("gluUnProject");
 		
 
 		
-		Point3d p = new Point3d(realx,realy,0.5);
+		Point3d p = new Point3d(objPos2[0],objPos2[1],objPos2[2]);
+		System.out.println(p);
 		// p.clampMax(1);
 		// p.clampMin(0);
 		return p;
