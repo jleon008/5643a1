@@ -6,6 +6,7 @@ public class Integrator_ForwardEuler implements Integrator {
 		Iterable<Particle> P = sys.getParticles();
 
 		for (Particle p : P) {
+			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, p.x); // p.x += timestep * p.v;
 			p.v.scaleAdd(timestep, p.f, p.v); // p.v += timestep * p.f;
 

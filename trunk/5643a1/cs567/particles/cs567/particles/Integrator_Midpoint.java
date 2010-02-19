@@ -19,7 +19,7 @@ public class Integrator_Midpoint implements Integrator {
 			// save originals
 			x_original.put(p, new Vector3d(p.x));
 			v_original.put(p, new Vector3d(p.v));
-
+			p.xOld.set(p.x);
 			// do half time step of forward euler
 			p.x.scaleAdd(timestep / 2, p.v, p.x); // p.x += timestep * p.v;
 			p.v.scaleAdd(timestep / 2, p.f, p.v); // p.v += timestep * p.f;
@@ -33,6 +33,7 @@ public class Integrator_Midpoint implements Integrator {
 		P = sys.getParticles();
 
 		for (Particle p : P) {
+			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, x_original.get(p));
 			p.v.scaleAdd(timestep, p.f, v_original.get(p));
 

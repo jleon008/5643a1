@@ -12,7 +12,7 @@ public class Integrator_SymplecticEuler implements Integrator {
 			p.v.scaleAdd(timestep, p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (zero out v):
-
+			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, p.x); // p.x += timestep * p.v;
 
 			// / APPLY PIN CONSTRAINTS (set p=p0):
