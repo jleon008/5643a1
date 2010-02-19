@@ -24,7 +24,9 @@ public class FilterPlane extends Filter {
 		targets = t;
 		normal.normalize();
 		bounded = true;
+		h.scaleAdd(-h.dot(normal), normal, h);
 		height = h;
+		w.scaleAdd(-w.dot(normal), normal, w);
 		width = w;
 	}
 	
