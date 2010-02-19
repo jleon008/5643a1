@@ -12,7 +12,7 @@ import javax.media.opengl.glu.GLUquadric;
  */
 public class Particle {
 	/** Radius of particle's circle graphic. */
-	public static final double PARTICLE_RADIUS = 0.05;
+	public static final double PARTICLE_RADIUS = 0.015;
 
 	/** Display list index. */
 	private static int PARTICLE_DISPLAY_LIST = -1;
@@ -162,8 +162,8 @@ public class Particle {
 		double b1 = 1;
 		double b2 = b1; //*Math.pow(r0, n-m);
 		double sumR = 2*PARTICLE_RADIUS;
-		double sr = 450;
-		double sd = 250;
+		double sr = 250;
+		double sd = 70;
 		
 		/*sr = dSquared/(cr*cr*(sumR)*(sumR));
 		sd = dSquared/(cd*cd*(sumR)*(sumR));
