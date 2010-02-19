@@ -15,8 +15,9 @@ public class ParticleSystem implements DynamicalSystem // implements
 {
 
 	private static double INTERACTION_RADIUS = .03;
-	
-	HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
+	private static int size= (int)Math.ceil(1.0/INTERACTION_RADIUS);
+	//HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
+	HashSet[] particleGrid = new HashSet[size*size*size];
 	
 	/** Current simulation time. */
 	double time = 0;
@@ -41,7 +42,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 		for (int i = 0; i < tot; i++) {
 			for (int j = 0; j < tot; j++) {
 				for (int k = 0; k < tot; k++) {
-					particleGrid[i][j][k] = new HashSet();
+					particleGrid[i +j*size + k*size*size] = new HashSet();
 				}
 			}
 		}
@@ -129,6 +130,10 @@ public class ParticleSystem implements DynamicalSystem // implements
 			force.display(gl);
 		}
 
+		for (Filter f: filters) {
+			f.display(gl);
+		}
+		
 		for (Particle particle : P) {
 			particle.display(gl);
 		}
@@ -188,8 +193,8 @@ public class ParticleSystem implements DynamicalSystem // implements
 				int ogy = Math.min(Math.max((int)(p.xOld.y/INTERACTION_RADIUS), 0), tot-1);
 				int ogz = Math.min(Math.max((int)(p.xOld.z/INTERACTION_RADIUS), 0), tot-1);
 				if (gz != ogz || gy != ogy || gx != ogx) {
-					particleGrid[ogx][ogy][ogz].remove(p);
-					particleGrid[gx][gy][gz].add(p);
+					particleGrid[ogx + size*ogy + size*size*ogz].remove(p);
+					particleGrid[gx + size*gy + size*size*gz].add(p);
 				}
 			}
 		
@@ -200,7 +205,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 			for (int i = Math.max(0, gx-1); i < Math.min(gx + 2, tot); i++) {
 				for (int j = Math.max(0, gy-1); j < Math.min(gy + 2, tot); j++) {
 					for (int k = Math.max(0, gz-1); k < Math.min(gz + 2, tot); k++) {
-						for (Object other : particleGrid[i][j][k]) {
+						for (Object other : particleGrid[i + size*j + size*size*k]) {
 							if (!other.equals(p)) {
 								p.interactionForce((Particle) other);
 							}
