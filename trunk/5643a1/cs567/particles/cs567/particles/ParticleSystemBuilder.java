@@ -16,8 +16,8 @@ import com.sun.opengl.util.*;
 /**
  * CS567: Assignment #1 "Particle Systems"
  * 
- * main() entry point class that initializes ParticleSystem, OpenGL rendering,
- * and GUI that manages GUI/mouse events.
+ * main() entry point class that initializes ParticleSystem, OpenGL rendering, and GUI that manages
+ * GUI/mouse events.
  * 
  * Spacebar toggles simulation advance.
  * 
@@ -27,7 +27,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	private FrameExporter frameExporter;
 
 	private Map<Particle, FilterPin> pinFilters = new HashMap<Particle, FilterPin>();
-	
+
 	private static int N_STEPS_PER_FRAME = 500;
 
 	/** Default graphics time step size. */
@@ -43,8 +43,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	Integrator I;
 
 	/**
-	 * Object that handles all GUI and user interactions of building Task
-	 * objects, and simulation.
+	 * Object that handles all GUI and user interactions of building Task objects, and simulation.
 	 */
 	BuilderGUI gui;
 
@@ -53,17 +52,20 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS = new ParticleSystem();
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
-	/*	Random r = new Random();
-		r.setSeed(System.currentTimeMillis());
-		for (int i = 0; i < 5; i++) {
-			for (int e = 0; e < 10; e++)
-			PS.createParticle(new Point3d(.25 + i*.015 + (r.nextFloat() - 1)*.0075, .02 + e*.015 + (r.nextFloat() - 1)*.0075, 0));
-		} */
+		/*
+		 * Random r = new Random(); r.setSeed(System.currentTimeMillis()); for (int i = 0; i < 5;
+		 * i++) { for (int e = 0; e < 10; e++) PS.createParticle(new Point3d(.25 + i*.015 +
+		 * (r.nextFloat() - 1)*.0075, .02 + e*.015 + (r.nextFloat() - 1)*.0075, 0)); }
+		 */
 		I = new Integrator_Midpoint();
-		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), PS.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS
+				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), PS
+				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS
+				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS
+				.getParticles()));
 	}
 
 	/**
@@ -112,7 +114,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	/** GLEventListener implementation: Initializes JOGL renderer. */
 	public void init(GLAutoDrawable drawable) {
 		// DEBUG PIPELINE (can use to provide GL error feedback... disable for speed)
-		//drawable.setGL(new DebugGL(drawable.getGL()));
+		// drawable.setGL(new DebugGL(drawable.getGL()));
 
 		GL gl = drawable.getGL();
 		System.err.println("INIT GL IS: " + gl.getClass().getName());
@@ -132,13 +134,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 	}
 
 	/** GLEventListener implementation */
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
-			boolean deviceChanged) {
+	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
 	}
 
 	/** GLEventListener implementation */
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		System.out.println("width=" + width + ", height=" + height);
 		height = Math.max(height, 1); // avoid height=0;
 
@@ -148,15 +148,14 @@ public class ParticleSystemBuilder implements GLEventListener {
 		GL gl = drawable.getGL();
 		gl.glViewport(0, 0, width, height);
 
-		//SETUP PERSPECTIVE PROJECTION AND MAPPING INTO UNIT CELL:
+		// SETUP PERSPECTIVE PROJECTION AND MAPPING INTO UNIT CELL:
 		persProj = new PerspectiveProjection(width, height);
 		persProj.apply_gluPerspective(gl);
 
 	}
 
 	/**
-	 * Main event loop: OpenGL display + simulation advance. GLEventListener
-	 * implementation.
+	 * Main event loop: OpenGL display + simulation advance. GLEventListener implementation.
 	 */
 	public void display(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
@@ -165,7 +164,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 		// / DRAW COMPUTATIONAL CELL BOUNDARY:
 		{
-			//front
+			// front
 			gl.glBegin(GL.GL_LINE_STRIP);
 			gl.glColor3f(1, 1, 1);
 			gl.glVertex3d(0, 0, 0);
@@ -174,7 +173,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			gl.glVertex3d(0, 1, 0);
 			gl.glVertex3d(0, 0, 0);
 			gl.glEnd();
-			//back
+			// back
 			gl.glBegin(GL.GL_LINE_STRIP);
 			gl.glColor3f(1, 1, 1);
 			gl.glVertex3d(0, 0, 1);
@@ -183,7 +182,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			gl.glVertex3d(0, 1, 1);
 			gl.glVertex3d(0, 0, 1);
 			gl.glEnd();
-			//4 connecting posts
+			// 4 connecting posts
 			gl.glBegin(GL.GL_LINE_STRIP);
 			gl.glColor3f(1, 1, 1);
 			gl.glVertex3d(0, 0, 0);
@@ -208,8 +207,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 		// / SIMULATE/DISPLAY HERE (Handled by BuilderGUI):
 		gui.simulateAndDisplayScene(gl);
-		
-		//update camera
+
+		// update camera
 		persProj.apply_gluPerspective(gl);
 
 		if (frameExporter != null) {
@@ -229,11 +228,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 		JFrame guiFrame;
 		TaskSelector taskSelector = new TaskSelector();
 		IntegratorSelector integratorSelector = new IntegratorSelector();
-		
+
 		BuilderGUI() {
 			guiFrame = new JFrame("Tasks");
-			guiFrame
-					.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			guiFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			// guiFrame.setLayout(new SpringLayout());
 			guiFrame.setLayout(new GridLayout(6, 1));
 
@@ -247,13 +245,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 					new JRadioButton("Pin Constraint", false) };
 			// new JRadioButton ("Rigid Constraint", false)};
 
-			JToggleButton[] integrators = {
-					new JRadioButton("Forward Euler", true),
+			JToggleButton[] integrators = { new JRadioButton("Forward Euler", true),
 					new JRadioButton("Midpoint Method", false),
 					new JRadioButton("Symplectic Euler", false),
-					new JRadioButton("Velocity Verlet", false),	
-			};
-			
+					new JRadioButton("Velocity Verlet", false), };
+
 			for (int i = 0; i < buttons.length; i++) {
 				buttonGroup.add(buttons[i]);
 				guiFrame.add(buttons[i]);
@@ -265,7 +261,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				guiFrame.add(integrators[i]);
 				integrators[i].addActionListener(integratorSelector);
 			}
-			
+
 			guiFrame.setSize(200, 200);
 			guiFrame.pack();
 			guiFrame.setVisible(true);
@@ -302,17 +298,15 @@ public class ParticleSystemBuilder implements GLEventListener {
 			if (task != null)
 				task.display(gl);
 
-			
 		}
 
 		/**
-		 * ActionListener implementation to manage Task selection using (radio)
-		 * buttons.
+		 * ActionListener implementation to manage Task selection using (radio) buttons.
 		 */
 		class TaskSelector implements ActionListener {
 			/**
-			 * Resets ParticleSystem to undeformed/material state, disables the
-			 * simulation, and removes the active Task.
+			 * Resets ParticleSystem to undeformed/material state, disables the simulation, and
+			 * removes the active Task.
 			 */
 			void resetToRest() {
 				PS.reset();// synchronized
@@ -347,9 +341,9 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 		}
-		
+
 		class IntegratorSelector implements ActionListener {
-			
+
 			public void actionPerformed(ActionEvent e) {
 				String cmd = e.getActionCommand();
 				System.out.println(cmd);
@@ -367,7 +361,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 					System.out.println("UNHANDLED ActionEvent: " + e);
 				}
 			}
-			
+
 		}
 
 		// Methods required for the implementation of MouseListener
@@ -408,8 +402,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 		}
 
 		/**
-		 * Handles keyboard events, e.g., spacebar toggles simulation/pausing,
-		 * and escape resets the current Task.
+		 * Handles keyboard events, e.g., spacebar toggles simulation/pausing, and escape resets the
+		 * current Task.
 		 */
 		public void dispatchKey(char key, KeyEvent e) {
 			// System.out.println("CHAR="+key+", keyCode="+e.getKeyCode()+", e="+e);
@@ -428,48 +422,48 @@ public class ParticleSystemBuilder implements GLEventListener {
 				lastTask.reset();
 				task = lastTask;
 			} else if (key == 'e') {// toggle exporter
-				frameExporter = ((frameExporter == null) ? (new FrameExporter())
-						: null);
+				frameExporter = ((frameExporter == null) ? (new FrameExporter()) : null);
 				System.out.println("'e' : frameExporter = " + frameExporter);
 			} else if (key == '=') {// increase nsteps
 				N_STEPS_PER_FRAME = Math.max((int) (1.05 * N_STEPS_PER_FRAME),
 						N_STEPS_PER_FRAME + 1);
-				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME
-						+ ";  dt=" + (DT / (double) N_STEPS_PER_FRAME));
+				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME + ";  dt="
+						+ (DT / (double) N_STEPS_PER_FRAME));
 			} else if (key == '-') {// decrease nsteps
-				int n = Math.min((int) (0.95 * N_STEPS_PER_FRAME),
-						N_STEPS_PER_FRAME - 1);
+				int n = Math.min((int) (0.95 * N_STEPS_PER_FRAME), N_STEPS_PER_FRAME - 1);
 				N_STEPS_PER_FRAME = Math.max(1, n);
-				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME
-						+ ";  dt=" + (DT / (double) N_STEPS_PER_FRAME));
-			} 
-			//rotation stuff
+				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME + ";  dt="
+						+ (DT / (double) N_STEPS_PER_FRAME));
+			}
+			// rotation stuff
 			else if (key == 'w') {
 				persProj.rotate(-30, 0);
-			}
-			else if (key == 's') {
+			} else if (key == 's') {
 				persProj.rotate(30, 0);
-			}
-			else if (key == 'a') {
+			} else if (key == 'a') {
 				persProj.rotate(0, -30);
-			}
-			else if (key == 'd') {
+			} else if (key == 'd') {
 				persProj.rotate(0, 30);
-			}
-			else if (key == 'x'){
+			} else if (key == 'x') {
 				persProj.resetCamera();
+			}
+			// hair performance tests //TODO this
+			else if (key == 'h') {
+				CreateHairTask task = new CreateHairTask();
+				double x = 0.1, y = 0.1, z = 0.5;
+				for (int i = 1; i <= 4; i++) {
+					task.addParticle(new Point3d(x * 2 * i, 5*y + y * 2 * (i % 2), z));
+				}
 			}
 		}
 
 		/**
-		 * "Task" command base-class extended to support building/interaction
-		 * via mouse interface. All objects extending Task are implemented here
-		 * as inner classes for simplicity.
+		 * "Task" command base-class extended to support building/interaction via mouse interface.
+		 * All objects extending Task are implemented here as inner classes for simplicity.
 		 */
 		abstract class Task implements MouseListener, MouseMotionListener {
 			/**
-			 * Displays any task-specific OpengGL information, e.g., highlights,
-			 * etc.
+			 * Displays any task-specific OpengGL information, e.g., highlights, etc.
 			 */
 			public void display(GL gl) {
 			}
@@ -498,8 +492,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 			/**
-			 * Override to specify reset behavior during "escape" key events,
-			 * etc.
+			 * Override to specify reset behavior during "escape" key events, etc.
 			 */
 			abstract void reset();
 
@@ -511,7 +504,9 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 			public void mousePressed(MouseEvent e) {
 				Point3d x0 = getPoint3d(e);
-				Particle lastCreatedParticle = PS.createParticle(x0);
+				if (0 < x0.x && 0 < x0.y && 0 < x0.z) { //only do in box
+					Particle lastCreatedParticle = PS.createParticle(x0);
+				}
 			}
 
 			void reset() {
@@ -587,16 +582,15 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 			/**
-			 * Find nearest particle, and create a SpringForce2Particle when
-			 * mouse released, unless nearest particle, p2, is same as p1.
+			 * Find nearest particle, and create a SpringForce2Particle when mouse released, unless
+			 * nearest particle, p2, is same as p1.
 			 */
 			public void mouseReleased(MouseEvent e) {
 				cursorP = getPoint3d(e);// cursor position
 				p2 = PS.getNearestParticle(cursorP); // / = constant (since at
 				// rest)
 				if (p1 != p2) {// make force object
-					SpringForce2Particle newForce = new SpringForce2Particle(
-							p1, p2, PS);// params
+					SpringForce2Particle newForce = new SpringForce2Particle(p1, p2, PS);// params
 					PS.addForce(newForce);
 				}
 				// / RESET:
@@ -611,8 +605,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 			/**
-			 * Draw spring-in-progress. NOTE: created springs are drawn by
-			 * ParticleSystem.
+			 * Draw spring-in-progress. NOTE: created springs are drawn by ParticleSystem.
 			 */
 			public void display(GL gl) {
 				if (cursorP == null || p1 == null)
@@ -642,8 +635,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				dragParticle = PS.getNearestParticle(cursorP);
 
 				// / START APPLYING FORCE:
-				springForce = new SpringForce1Particle(dragParticle, cursorP,
-						PS);
+				springForce = new SpringForce1Particle(dragParticle, cursorP, PS);
 				PS.addForce(springForce);// to be removed later
 			}
 
@@ -680,15 +672,18 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 			/** Create new particle. */
 			public void mousePressed(MouseEvent e) {
-				Particle p2 = PS.createParticle(getPoint3d(e));
+				addParticle(getPoint3d(e));
+			}
+
+			public void addParticle(Point3d p) {
+				Particle p2 = PS.createParticle(p);
 				if (hairParticles.size() > 0) {// / ADD STRETCH SPRING p1-p2:
 					Particle p1 = hairParticles.get(hairParticles.size() - 1);
 					PS.addForce(new SpringForce2Particle(p1, p2, PS));
 
 					if (hairParticles.size() > 1) {// / ADD BENDING SPRING TO
 						// p0-p1-p2
-						Particle p0 = hairParticles
-								.get(hairParticles.size() - 2);
+						Particle p0 = hairParticles.get(hairParticles.size() - 2);
 						PS.addForce(new SpringForceBending(p0, p1, p2, PS));
 					}
 				}
@@ -785,21 +780,19 @@ public class ParticleSystemBuilder implements GLEventListener {
 		void writeFrame() {
 			long timeNS = -System.nanoTime();
 			String number = Utils.getPaddedNumber(nFrames, 5, "0");
-			String filename = "frames/export" + exportId + "-" + number
-					+ ".png";// / BUG: DIRECTORY MUST EXIST!
+			String filename = "frames/export" + exportId + "-" + number + ".png";// / BUG: DIRECTORY
+																					// MUST EXIST!
 
 			try {
 				java.io.File file = new java.io.File(filename);
 				if (file.exists())
-					System.out.println("WARNING: OVERWRITING PREVIOUS FILE: "
-							+ filename);
+					System.out.println("WARNING: OVERWRITING PREVIOUS FILE: " + filename);
 
 				// / WRITE IMAGE: ( :P Screenshot asks for width/height -->
 				// cache in GLEventListener.reshape() impl)
 				com.sun.opengl.util.Screenshot.writeToFile(file, width, height);
 
-				System.out.println((timeNS / 1000000) + "ms:  Wrote image: "
-						+ filename);
+				System.out.println((timeNS / 1000000) + "ms:  Wrote image: " + filename);
 
 			} catch (Exception e) {
 				e.printStackTrace();
