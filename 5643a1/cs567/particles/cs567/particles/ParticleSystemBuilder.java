@@ -52,12 +52,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS = new ParticleSystem();
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
-		Random r = new Random();
-		r.setSeed(System.currentTimeMillis());
-		/*for (int i = 0; i < 5; i++) {
-			for (int e = 0; e < 10; e++)
-			PS.createParticle(new Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .02 + e*.02 + (r.nextFloat() - 1)*.00005, 0));
-		}*/
+		/*
+		 * for (int i = 0; i < 5; i++) { for (int e = 0; e < 10; e++) PS.createParticle(new
+		 * Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .02 + e*.02 + (r.nextFloat() -
+		 * 1)*.00005, 0)); }
+		 */
 		I = new Integrator_Midpoint();
 		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS
 				.getParticles()));
@@ -66,6 +65,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS
 				.getParticles()));
 		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS
+				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 1), new Vector3d(0, 0, -1), PS
+				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), PS
 				.getParticles()));
 	}
 
@@ -453,7 +456,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				CreateHairTask task = new CreateHairTask();
 				double x = 0.1, y = 0.1, z = 0.5;
 				for (int i = 1; i <= 4; i++) {
-					task.addParticle(new Point3d(x * 2 * i, 5*y + y * 2 * (i % 2), z));
+					task.addParticle(new Point3d(x * 2 * i, 5 * y + y * 2 * (i % 2), z));
 				}
 			}
 		}
@@ -505,7 +508,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 			public void mousePressed(MouseEvent e) {
 				Point3d x0 = getPoint3d(e);
-				if (0 < x0.x && 0 < x0.y && 0 < x0.z) { //only do in box
+				if (0 < x0.x && 0 < x0.y && 0 < x0.z) { // only do in box
 					Particle lastCreatedParticle = PS.createParticle(x0);
 				}
 			}
@@ -782,7 +785,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			long timeNS = -System.nanoTime();
 			String number = Utils.getPaddedNumber(nFrames, 5, "0");
 			String filename = "frames/export" + exportId + "-" + number + ".png";// / BUG: DIRECTORY
-																					// MUST EXIST!
+			// MUST EXIST!
 
 			try {
 				java.io.File file = new java.io.File(filename);
