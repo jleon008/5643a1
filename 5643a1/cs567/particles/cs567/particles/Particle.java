@@ -29,6 +29,8 @@ public class Particle {
 	/** Deformed Position. */
 	Point3d x = new Point3d();
 
+	Point3d xOld = new Point3d();
+	
 	/** Undeformed/material Position. */
 	Point3d x0 = new Point3d();
 
@@ -44,6 +46,7 @@ public class Particle {
 	 */
 	Particle(Point3d x0) {
 		this.x0.set(x0);
+		xOld.set(x0);
 		x.set(x0);
 	}
 
@@ -151,16 +154,16 @@ public class Particle {
 		double d = posDif.length();
 		double dSquared =d*d;
 		
-		int m = 5;
-		int n = 3;
+		int m = 6;
+		int n = 5;
 		double r0= 2*PARTICLE_RADIUS;
 		double cr = r0;
 		double cd = r0;
-		double b1 = 100;
+		double b1 = 1;
 		double b2 = b1; //*Math.pow(r0, n-m);
 		double sumR = 2*PARTICLE_RADIUS;
-		double sr = 1;
-		double sd = .01;
+		double sr = 450;
+		double sd = 250;
 		
 		/*sr = dSquared/(cr*cr*(sumR)*(sumR));
 		sd = dSquared/(cd*cd*(sumR)*(sumR));
@@ -172,7 +175,7 @@ public class Particle {
 		f.set(posDif);
 		f.normalize();
 		
-		double sf = -sr*(b1/Math.pow(d/r0, m) - b2/Math.pow(d/r0, n)) + sd*(velDif.dot(f));
+		double sf = -sr*(b1/Math.pow(d/r0, m) - b2/Math.pow(d/r0, n)) + sd*(velDif.dot(f)/(d/r0));
 		f.scale(sf);
 		other.f.add(f);
 		

@@ -7,6 +7,7 @@ public class Integrator_VelocityVerlet implements Integrator {
 		Iterable<Particle> P = sys.getParticles();
 
 		for (Particle p : P) {
+			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, p.x); // p.x += timestep * p.v;
 			p.x.scaleAdd(1.0/2.0*timestep*timestep, p.f, p.x);
 			

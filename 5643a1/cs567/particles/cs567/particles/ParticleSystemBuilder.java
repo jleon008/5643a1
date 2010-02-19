@@ -52,11 +52,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS = new ParticleSystem();
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
-		/*
-		 * Random r = new Random(); r.setSeed(System.currentTimeMillis()); for (int i = 0; i < 5;
-		 * i++) { for (int e = 0; e < 10; e++) PS.createParticle(new Point3d(.25 + i*.015 +
-		 * (r.nextFloat() - 1)*.0075, .02 + e*.015 + (r.nextFloat() - 1)*.0075, 0)); }
-		 */
+		/*for (int i = 0; i < 5; i++) {
+			for (int e = 0; e < 10; e++)
+			PS.createParticle(new Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .02 + e*.02 + (r.nextFloat() - 1)*.00005, 0));
+		}*/
 		I = new Integrator_Midpoint();
 		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS
 				.getParticles()));

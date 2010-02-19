@@ -14,7 +14,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 														// Serializable
 {
 
-	private static double INTERACTION_RADIUS = 1;
+	private static double INTERACTION_RADIUS = .03;
 	
 	HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
 	
@@ -170,21 +170,28 @@ public class ParticleSystem implements DynamicalSystem // implements
 		// / Clear force accumulators:
 		
 		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
-		for (int i = 0; i < tot; i++) {
-			for (int j = 0; j < tot; j++) {
-				for (int k = 0; k < tot; k++) {
-					particleGrid[i][j][k].clear();
+		/*	for (int i = 0; i < tot; i++) {
+				for (int j = 0; j < tot; j++) {
+					for (int k = 0; k < 1; k++) {
+						particleGrid[i][j][k].clear();
+					}
 				}
 			}
-		}
-		
-		for (Particle p : P) {
-			p.f.set(0, 0, 0);
-			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
-			int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
-			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
-			particleGrid[gx][gy][gz].add(p);
-		}
+	*/
+			
+			for (Particle p : P) {
+				p.f.set(0, 0, 0);
+				int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
+				int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
+				int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
+				int ogx = Math.min(Math.max((int)(p.xOld.x/INTERACTION_RADIUS), 0), tot-1);
+				int ogy = Math.min(Math.max((int)(p.xOld.y/INTERACTION_RADIUS), 0), tot-1);
+				int ogz = Math.min(Math.max((int)(p.xOld.z/INTERACTION_RADIUS), 0), tot-1);
+				if (gz != ogz || gy != ogy || gx != ogx) {
+					particleGrid[ogx][ogy][ogz].remove(p);
+					particleGrid[gx][gy][gz].add(p);
+				}
+			}
 		
 		for (Particle p : P) {
 			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
