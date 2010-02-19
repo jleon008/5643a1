@@ -4,6 +4,9 @@ import java.util.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import javax.swing.*;
 import javax.vecmath.*;
@@ -37,6 +40,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 	JFrame frame = null;
 
 	private int width, height;
+	
+	private int frameNumber = 0;
 
 	/** The single ParticleSystem reference. */
 	ParticleSystem PS; // TODO use DynamicalSystem
@@ -111,6 +116,12 @@ public class ParticleSystemBuilder implements GLEventListener {
 	}
 
 	private PerspectiveProjection persProj;
+
+	private boolean povExport;
+
+	private int numFrames;
+
+	private String outFile;
 
 	/** Maps mouse event into computational cell using OrthoMap. */
 	public Point3d getPoint3d(MouseEvent e) {
@@ -217,9 +228,44 @@ public class ParticleSystemBuilder implements GLEventListener {
 		// update camera
 		persProj.apply_gluPerspective(gl);
 
+		frameNumber++;
+		if (frameNumber > numFrames) System.exit(0);
+		if (povExport) {
+			writePov();
+		}
+		
 		if (frameExporter != null) {
 			frameExporter.writeFrame();
 		}
+	}
+
+	private void writePov() {
+		File f = new File(outFile + frameNumber + ".pov");
+		try {
+			PrintWriter p = new PrintWriter(f);
+			p.println("#include \"colors.inc\"");
+			p.println("#include \"textures.inc\"");
+			p.println("#include \"finish.inc\"");
+			p.println("background{Black}");
+			p.println("#declare Water = pigment\n{\ncolor Blue transmit 0.7\n}");
+			p.println("camera {\nlocation <0,0,-3>\nlook_at <0,0,0>\n}");
+			p.println("light_source { <10, 20, -10> color White }");
+			
+			p.println("blob\n{\nthreshold .5\n");
+			
+			for (Particle s : PS.getParticles()) {
+				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, 1, 1 pigment {Water} }");
+			}
+			
+			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
+			
+			p.println("box {\n<-8, -8, 2>, <8,8,4>\ntexture { White_Marble scale 0.5 }\n}");
+			p.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/** Interaction central: Handles windowing/mouse events, and building state. */
@@ -815,6 +861,14 @@ public class ParticleSystemBuilder implements GLEventListener {
 	public static void main(String[] args) {
 		try {
 			ParticleSystemBuilder psb = new ParticleSystemBuilder();
+			
+			if (args.length != 0) {
+				psb.povExport = true;
+				psb.numFrames = Integer.parseInt(args[0]);
+				N_STEPS_PER_FRAME = Integer.parseInt(args[1]);
+				psb.outFile = args[2];
+			}
+			
 			psb.start();
 
 		} catch (Exception e) {
