@@ -52,16 +52,18 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS = new ParticleSystem();
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
-		/*
-		 * for (int i = 0; i < 5; i++) { for (int e = 0; e < 10; e++) PS.createParticle(new
-		 * Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .02 + e*.02 + (r.nextFloat() -
-		 * 1)*.00005, 0)); }
-		 */
+		Random r = new Random();
+	/*	r.setSeed(System.currentTimeMillis());
+		 for (int i = 0; i < 5; i++) {
+			 for (int z = 0; z < 5 ; z ++)
+				 for (int e = 0; e < 10; e++) 
+					 PS.createParticle(new Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .02 + e*.02 + (r.nextFloat() - 1)*.00005, .25 + z*.02 + (r.nextFloat() - 1)*.00005)); }
+*/
 		I = new Integrator_Midpoint();
 		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS
 				.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), PS
-				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, .5, .5), new Vector3d(1, 0, 0), PS
+				.getParticles(), new Vector3d(0, .5, 0), new Vector3d(0, 0, .5)));
 		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS
 				.getParticles()));
 		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS
