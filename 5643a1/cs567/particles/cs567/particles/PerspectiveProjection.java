@@ -101,7 +101,7 @@ public class PerspectiveProjection extends OrthoMap {
 //		offsetX /= size.width;
 //		offsetY /= size.height;
 		
-		//not working... don't know why - proj is singular, non-invertible
+		//not working... don't know why - proj is singular, non-invertible is near plane is zero
 		//boolean result = glu.gluUnProject(realx, realy, 0.0, model, 0, proj, 0, view, 0, objPos, 0);
 		
 		

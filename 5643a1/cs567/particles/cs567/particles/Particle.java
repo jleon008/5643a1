@@ -2,6 +2,8 @@ package cs567.particles;
 
 import javax.vecmath.*;
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
 
 /**
  * Simple particle implementation, with miscellaneous adornments.
@@ -73,7 +75,7 @@ public class Particle {
 
 		// / DRAW ORIGIN-CIRCLE TRANSLATED TO "p":
 		gl.glPushMatrix();
-		gl.glTranslated(x.x, x.y, 0);
+		gl.glTranslated(x.x, x.y, x.z);
 		gl.glCallList(PARTICLE_DISPLAY_LIST);
 		gl.glPopMatrix();
 	}
@@ -110,21 +112,31 @@ public class Particle {
 		double vectorY1 = p.y;
 		double vectorX1 = p.x;
 		double vectorZ1 = p.z;
+		
+		GLU glu = new GLU();
+		GLUquadric quadratic = glu.gluNewQuadric();
+		glu.gluQuadricNormals(quadratic, GLU.GLU_SMOOTH);
+		glu.gluQuadricTexture(quadratic, true);
+		
+		gl.glPushMatrix();
+		gl.glTranslated(p.x, p.y, p.z);
+		glu.gluSphere(quadratic, radius, 12, 12);
+		gl.glPopMatrix();
 
-		gl.glBegin(GL.GL_TRIANGLES);
-		int N = 45;
-		for (int i = 0; i <= N; i++) {
-			double angle = ((double) i) * 2. * Math.PI / (double) N;
-			double vectorX = p.x + radius * Math.sin(angle);
-			double vectorY = p.y + radius * Math.cos(angle);
-			double vectorZ = p.z + 0; // TODO: 3d-ify
-			gl.glVertex3d(p.x, p.y, p.z);
-			gl.glVertex3d(vectorX1, vectorY1, vectorZ1);
-			gl.glVertex3d(vectorX, vectorY, vectorZ);
-			vectorY1 = vectorY;
-			vectorX1 = vectorX;
-			vectorZ1 = vectorZ;
-		}
+//		gl.glBegin(GL.GL_TRIANGLES);
+//		int N = 45;
+//		for (int i = 0; i <= N; i++) {
+//			double angle = ((double) i) * 2. * Math.PI / (double) N;
+//			double vectorX = p.x + radius * Math.sin(angle);
+//			double vectorY = p.y + radius * Math.cos(angle);
+//			double vectorZ = p.z + 0; // TODO: 3d-ify
+//			gl.glVertex3d(p.x, p.y, p.z);
+//			gl.glVertex3d(vectorX1, vectorY1, vectorZ1);
+//			gl.glVertex3d(vectorX, vectorY, vectorZ);
+//			vectorY1 = vectorY;
+//			vectorX1 = vectorX;
+//			vectorZ1 = vectorZ;
+//		}
 		gl.glEnd();
 	}
 
@@ -144,7 +156,7 @@ public class Particle {
 		double r0= 2*PARTICLE_RADIUS;
 		double cr = r0;
 		double cd = r0;
-		double b1 = 500;
+		double b1 = 100;
 		double b2 = b1; //*Math.pow(r0, n-m);
 		double sumR = 2*PARTICLE_RADIUS;
 		double sr = 1;
