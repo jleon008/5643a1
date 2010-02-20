@@ -2,12 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="cs567/particles"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_16"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_16/jre/lib/ext/vecmath.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Particles"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="jogl.jar">
 		<attributes>
@@ -15,5 +9,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Particles"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="vecmath.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
