@@ -24,4 +24,8 @@ public interface Constants {
 	public static final double STIFFNESS_BEND = 500.0;
 
 	public static final double GRAVITY = 10.0;
+	
+	public static final boolean WALLS_ON = false;
+	
+	public static final boolean PARTICLE_PARTICLE_ON = false;
 }

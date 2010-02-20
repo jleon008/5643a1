@@ -6,8 +6,8 @@ import java.awt.event.MouseEvent;
 import javax.vecmath.Point3d;
 
 /**
- * Simple object for setting up orthographic projection in OpenGL, and mapping
- * mouse clicks into the unit computational cell.
+ * Simple object for setting up orthographic projection in OpenGL, and mapping mouse clicks into the unit computational
+ * cell.
  * 
  * @author Doug James, January 2007
  */
@@ -31,28 +31,20 @@ public class OrthoMap {
 	}
 
 	public void apply_glOrtho(GL gl) {
-		// TODO: replace with something 3d
 		gl.glOrtho(L - eps, R + eps, B - eps, T + eps, -1, +1);
 	}
 
 	/**
-	 * Get 3d coordinates in unit computation cell of e using knowledge of ortho
-	 * projection.
+	 * Get 3d coordinates in unit computation cell of e using knowledge of ortho projection.
 	 */
 	public Point3d getPoint3d(MouseEvent e) {
 		Dimension size = e.getComponent().getSize();
 
-		double x = (double) e.getX() / (double) size.width; // / on [0,1]
-															// (unless outside
-															// mouse click)
+		double x = (double) e.getX() / (double) size.width; // / on [0,1] (unless outside mouse click)
 		x *= (r + 2 * eps);
 		x -= eps;
 
-		double y = 1. - (double) e.getY() / (double) size.height;// / on [0,1]
-																	// (unless
-																	// outside
-																	// mouse
-																	// click)
+		double y = 1. - (double) e.getY() / (double) size.height;// / on [0,1] (unless outside mouse click)
 		y *= (1 + 2 * eps);
 		y -= eps;
 
