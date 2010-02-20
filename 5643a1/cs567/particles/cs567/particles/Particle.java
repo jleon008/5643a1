@@ -126,21 +126,6 @@ public class Particle {
 		glu.gluSphere(quadratic, radius, 12, 12);
 		gl.glPopMatrix();
 
-//		gl.glBegin(GL.GL_TRIANGLES);
-//		int N = 45;
-//		for (int i = 0; i <= N; i++) {
-//			double angle = ((double) i) * 2. * Math.PI / (double) N;
-//			double vectorX = p.x + radius * Math.sin(angle);
-//			double vectorY = p.y + radius * Math.cos(angle);
-//			double vectorZ = p.z + 0; // TODO: 3d-ify
-//			gl.glVertex3d(p.x, p.y, p.z);
-//			gl.glVertex3d(vectorX1, vectorY1, vectorZ1);
-//			gl.glVertex3d(vectorX, vectorY, vectorZ);
-//			vectorY1 = vectorY;
-//			vectorX1 = vectorX;
-//			vectorZ1 = vectorZ;
-//		}
-		gl.glEnd();
 	}
 
 	public void interactionForce(Particle other) {

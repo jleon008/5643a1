@@ -5,31 +5,28 @@ import javax.vecmath.*;
 import javax.media.opengl.*;
 
 /**
- * Maintains dynamic lists of Particle and Force objects, and provides access to
- * their state for numerical integration of dynamics.
+ * Maintains dynamic lists of Particle and Force objects, and provides access to their state for numerical integration
+ * of dynamics.
  * 
  * @author Doug James, January 2007
  */
-public class ParticleSystem implements DynamicalSystem // implements
-														// Serializable
+public class ParticleSystem implements DynamicalSystem // implements Serializable
 {
 
 	private static double INTERACTION_RADIUS = .03;
-	private static int size= (int)Math.ceil(1.0/INTERACTION_RADIUS);
-	//HashSet[][][] particleGrid = new HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
-	HashSet[] particleGrid = new HashSet[size*size*size];
-	
+	private static int size = (int) Math.ceil(1.0 / INTERACTION_RADIUS);
+	// HashSet[][][] particleGrid = new
+	// HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
+	HashSet[] particleGrid = new HashSet[size * size * size];
+
 	/** Current simulation time. */
 	double time = 0;
 
-	
-	
 	private Set<Filter> filters = new HashSet<Filter>();
-	
+
 	/** List of Particle objects. */
 	ArrayList<Particle> P = new ArrayList<Particle>();
 
-	
 	/** List of Force objects. */
 	ArrayList<Force> F = new ArrayList<Force>();
 
@@ -37,16 +34,16 @@ public class ParticleSystem implements DynamicalSystem // implements
 
 	/** Basic constructor. */
 	public ParticleSystem() {
-		
-		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
+
+		int tot = (int) Math.ceil(1.0 / INTERACTION_RADIUS);
 		for (int i = 0; i < tot; i++) {
 			for (int j = 0; j < tot; j++) {
 				for (int k = 0; k < tot; k++) {
-					particleGrid[i +j*size + k*size*size] = new HashSet();
+					particleGrid[i + j * size + k * size * size] = new HashSet();
 				}
 			}
 		}
-		
+
 	}
 
 	/** Adds a force object (until removed) */
@@ -55,8 +52,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 	/**
-	 * Useful for removing temporary forces, such as user-interaction spring
-	 * forces.
+	 * Useful for removing temporary forces, such as user-interaction spring forces.
 	 */
 	public synchronized void removeForce(Force f) {
 		F.remove(f);
@@ -76,8 +72,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 	/**
-	 * Helper-function that computes nearest particle to the specified
-	 * (deformed) position.
+	 * Helper-function that computes nearest particle to the specified (deformed) position.
 	 * 
 	 * @return Nearest particle, or null if no particles.
 	 */
@@ -95,9 +90,8 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 	/**
-	 * Moves all particles to undeformed/materials positions, and sets all
-	 * velocities to zero. Synchronized to avoid problems with simultaneous
-	 * calls to advanceTime().
+	 * Moves all particles to undeformed/materials positions, and sets all velocities to zero. Synchronized to avoid
+	 * problems with simultaneous calls to advanceTime().
 	 */
 	public synchronized void reset() {
 		for (Particle p : P) {
@@ -110,8 +104,7 @@ public class ParticleSystem implements DynamicalSystem // implements
 	}
 
 	/**
-	 * Incomplete/Debugging implementation of Forward-Euler step. WARNING:
-	 * Contains buggy debugging forces.
+	 * Incomplete/Debugging implementation of Forward-Euler step. WARNING: Contains buggy debugging forces.
 	 */
 	public synchronized void advanceTime(double dt, Integrator i) {
 		updateForces();
@@ -130,113 +123,115 @@ public class ParticleSystem implements DynamicalSystem // implements
 			force.display(gl);
 		}
 
-		for (Filter f: filters) {
+		for (Filter f : filters) {
 			f.display(gl);
 		}
-		
+
 		for (Particle particle : P) {
 			particle.display(gl);
 		}
 	}
 
-//	@Override
+	// @Override
 	public void derivEval() {
 		// TODO Auto-generated method stub
 
 	}
 
-//	@Override
+	// @Override
 	public Collection<Force> getForces() {
 
 		return F;
 	}
 
-//	@Override
+	// @Override
 	public Collection<Particle> getParticles() {
 
 		return P;
 	}
 
-//	@Override
+	// @Override
 	public double getTime() {
 
 		return time;
 	}
 
-	//@Override
+	// @Override
 	public void setTime(double time) {
 		this.time = time;
 		;
 	}
 
-	//@Override
+	// @Override
 	public void updateForces() {
 		// TODO Auto-generated method stub
 		// / Clear force accumulators:
-		
-		int tot = (int)Math.ceil(1.0/INTERACTION_RADIUS);
-		/*	for (int i = 0; i < tot; i++) {
-				for (int j = 0; j < tot; j++) {
-					for (int k = 0; k < 1; k++) {
-						particleGrid[i][j][k].clear();
-					}
-				}
-			}
-	*/
-			
-			for (Particle p : P) {
-				p.f.set(0, 0, 0);
-				int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
-				int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
-				int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
-				int ogx = Math.min(Math.max((int)(p.xOld.x/INTERACTION_RADIUS), 0), tot-1);
-				int ogy = Math.min(Math.max((int)(p.xOld.y/INTERACTION_RADIUS), 0), tot-1);
-				int ogz = Math.min(Math.max((int)(p.xOld.z/INTERACTION_RADIUS), 0), tot-1);
-				if (gz != ogz || gy != ogy || gx != ogx) {
-					particleGrid[ogx + size*ogy + size*size*ogz].remove(p);
-					particleGrid[gx + size*gy + size*size*gz].add(p);
-				}
-			}
-		
+
 		for (Particle p : P) {
-			int gx = Math.min(Math.max((int)(p.x.x/INTERACTION_RADIUS), 0), tot-1);
-			int gy = Math.min(Math.max((int)(p.x.y/INTERACTION_RADIUS), 0), tot-1);
-			int gz = Math.min(Math.max((int)(p.x.z/INTERACTION_RADIUS), 0), tot-1);
-			for (int i = Math.max(0, gx-1); i < Math.min(gx + 2, tot); i++) {
-				for (int j = Math.max(0, gy-1); j < Math.min(gy + 2, tot); j++) {
-					for (int k = Math.max(0, gz-1); k < Math.min(gz + 2, tot); k++) {
-						for (Object other : particleGrid[i + size*j + size*size*k]) {
-							if (!other.equals(p)) {
-								p.interactionForce((Particle) other);
+			p.f.set(0, 0, 0);
+		}
+
+		if (Constants.PARTICLE_PARTICLE_ON) {
+			int tot = (int) Math.ceil(1.0 / INTERACTION_RADIUS);
+
+			// for (int i = 0; i < tot; i++) {
+			// for (int j = 0; j < tot; j++) {
+			// for (int k = 0; k < 1; k++) {
+			// particleGrid[i][j][k].clear();
+			// }
+			// }
+			// }
+
+			for (Particle p : P) {
+				int gx = Math.min(Math.max((int) (p.x.x / INTERACTION_RADIUS), 0), tot - 1);
+				int gy = Math.min(Math.max((int) (p.x.y / INTERACTION_RADIUS), 0), tot - 1);
+				int gz = Math.min(Math.max((int) (p.x.z / INTERACTION_RADIUS), 0), tot - 1);
+				int ogx = Math.min(Math.max((int) (p.xOld.x / INTERACTION_RADIUS), 0), tot - 1);
+				int ogy = Math.min(Math.max((int) (p.xOld.y / INTERACTION_RADIUS), 0), tot - 1);
+				int ogz = Math.min(Math.max((int) (p.xOld.z / INTERACTION_RADIUS), 0), tot - 1);
+				if (gz != ogz || gy != ogy || gx != ogx) {
+					particleGrid[ogx + size * ogy + size * size * ogz].remove(p);
+					particleGrid[gx + size * gy + size * size * gz].add(p);
+				}
+			}
+
+			for (Particle p : P) {
+				int gx = Math.min(Math.max((int) (p.x.x / INTERACTION_RADIUS), 0), tot - 1);
+				int gy = Math.min(Math.max((int) (p.x.y / INTERACTION_RADIUS), 0), tot - 1);
+				int gz = Math.min(Math.max((int) (p.x.z / INTERACTION_RADIUS), 0), tot - 1);
+				for (int i = Math.max(0, gx - 1); i < Math.min(gx + 2, tot); i++) {
+					for (int j = Math.max(0, gy - 1); j < Math.min(gy + 2, tot); j++) {
+						for (int k = Math.max(0, gz - 1); k < Math.min(gz + 2, tot); k++) {
+							for (Object other : particleGrid[i + size * j + size * size * k]) {
+								if (!other.equals(p)) {
+									p.interactionForce((Particle) other);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-
-		{// / Gather forces: (TODO)
-			for (Force force : F) {
-				force.applyForce();
-			}
+		// / Gather forces:
+		for (Force force : F) {
+			force.applyForce();
 		}
 	}
 
 	public void addFilter(Filter f) {
 		filters.add(f);
-		
+
 	}
 
 	public void removeFilter(Filter f) {
 		filters.remove(f);
 	}
 
-	
 	public void applyFilters() {
 		for (Filter f : filters) {
-			f.applyFilter();	
+			f.applyFilter();
 		}
-		
+
 	}
 
 }
