@@ -249,7 +249,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			p.println("blob\n{\nthreshold .5\n");
 			
 			for (Particle s : PS.Goo) {
-				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .07, 1 pigment {Water} }");
+				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .03, 1 pigment {Water} }");
 			}
 			
 			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
@@ -257,7 +257,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			p.println("blob\n{\nthreshold .5\n");
 			
 			for (Particle s : PS.Paper) {
-				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .07, 1 pigment {Paper} }");
+				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .03, 1 pigment {Paper} }");
 			}
 			
 			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
