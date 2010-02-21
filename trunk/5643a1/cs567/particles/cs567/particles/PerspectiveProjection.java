@@ -157,6 +157,8 @@ public class PerspectiveProjection extends OrthoMap {
 			eyeX += 0.5;
 			eyeY += 0.5;
 			eyeZ += 0.5;
+			
+			System.out.printf("%f, %f, %f\n", eyeX, eyeY, eyeZ);
 	}
 
 	public void resetCamera() {

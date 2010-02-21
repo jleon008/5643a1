@@ -56,16 +56,17 @@ public class ParticleSystemBuilder implements GLEventListener {
 		PS = new ParticleSystem();
 		PS.addForce(new GravitationalForce(PS));
 		PS.addForce(new ViscousDragForce(PS));
-		Random r = new Random();
-		r.setSeed(System.currentTimeMillis());
-		 for (int i = 0; i < 5; i++) {
-			 for (int z = 0; z < 1 ; z ++)
-				 for (int e = 0; e < 10; e++) 
-					 PS.createGooParticle(new Point3d(.27 + i*.02 + (r.nextFloat() - 1)*.00005, .5 + e*.02 + (r.nextFloat() - 1)*.00005, .5 + z*.02)); }
+		// Random r = new Random();
+		// r.setSeed(System.currentTimeMillis());
+		// for (int i = 0; i < 5; i++) {
+		// for (int z = 0; z < 1 ; z ++)
+		// for (int e = 0; e < 10; e++)
+		// PS.createGooParticle(new Point3d(.27 + i*.02 + (r.nextFloat() - 1)*.00005, .5 + e*.02 + (r.nextFloat() -
+		// 1)*.00005, .5 + z*.02)); }
+		//
+		// for (int u = 0; u < 10; u++)
+		// PS.createPaperParticle(new Point3d(.2 + u*.02, .45, .5));
 
-		 for (int u = 0; u < 10; u++)
-			 PS.createPaperParticle(new Point3d(.2 + u*.02, .45, .5));
-		
 		PS.addFilter(new FilterPlane(new Vector3d(0, .5, .5), new Vector3d(1, 0, 0), PS.getParticles(), new Vector3d(0,
 				.5, 0), new Vector3d(0, 0, .5)));
 
@@ -226,8 +227,6 @@ public class ParticleSystemBuilder implements GLEventListener {
 		// update camera
 		persProj.apply_gluPerspective(gl);
 
-
-
 		if (frameExporter != null) {
 			frameExporter.writeFrame();
 		}
@@ -242,34 +241,47 @@ public class ParticleSystemBuilder implements GLEventListener {
 			p.println("#include \"finish.inc\"");
 			p.println("background{Black}");
 			p.println("#declare Water = pigment\n{\ncolor Blue transmit 0.7\n}");
-			p.println("#declare Paper = pigment\n{\ncolor Red transmit 0.7\n}");
-			p.println("camera {\nlocation <0,0,-2>\nlook_at <0,0,0>\n}");
-			p.println("light_source { <10, 20, -10> color White }");
-			
+			p.println("#declare Paper = pigment\n{\r\n" + 
+					"   gradient z\r\n" + 
+					"   color_map {\r\n" + 
+					"      [0.00, rgb <0.98, 0.98, 0.87>]\r\n" + 
+					"      [1.00, rgb <0.98, 0.98, 0.87>]\r\n" + 
+					"   }\r\n" + 
+					"\r\n" + 
+					"}");
+			p.println("camera {\nlocation <0.99,0.99,0.99>\nlook_at <0.5,0.5,0.5>\n}");
+			p.println("light_source { <0.49, .99, 0.49> color White }");
+
 			p.println("blob\n{\nthreshold .5\n");
-			
+
 			for (Particle s : PS.Goo) {
-				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .03, 1 pigment {Water} }");
+				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z + ">, .03, 1 pigment {Water} }");
 			}
-			
+
 			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
-			
+
 			p.println("blob\n{\nthreshold .5\n");
-			
+
 			for (Particle s : PS.Paper) {
-				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z +">, .03, 1 pigment {Paper} }");
+				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z + ">, .03, 1 pigment {Paper} }");
 			}
-			
-			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
-	
-			
-			p.println("box {\n<-8, -8, 2>, <8,8,4>\ntexture { White_Marble scale 0.5 }\n}");
+
+			p.println("finish {ambient 0.0\r\n" + 
+					"diffuse 0.1\r\n" + 
+					"specular 0.1\r\n" + 
+					"roughness 0.1\r\n" + 
+					"reflection { 0.001, 1.0 fresnel on }\r\n" + 
+					"}\r\n" + 
+					"interior { ior 1.33 }\n" +
+					"}");
+
+			p.println("box {\n<0,0,0>, <1,1,1>\ntexture { White_Marble scale 0.5 }\n}");
 			p.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/** Interaction central: Handles windowing/mouse events, and building state. */
@@ -343,7 +355,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 				frameNumber++;
 
 				if (povExport) {
-					if (frameNumber > numFrames) System.exit(0);
+					if (frameNumber > numFrames)
+						System.exit(0);
 					writePov();
 				}
 			}
@@ -501,7 +514,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			} else if (key == 'x') {
 				persProj.resetCamera();
 			}
-			// TODO hair performance tests
+			// hair performance tests
 			else if (key == 'h') {
 				for (int i = 0; i < 2; i++) {
 					CreateHairTask task = new CreateHairTask();
@@ -529,47 +542,74 @@ public class ParticleSystemBuilder implements GLEventListener {
 				}
 			}
 			// paper maker
-			else if ( key == 'p') {
-				int size = 20;
+			else if (key == 'p') {
+				int size = 10;
 				Particle[][] paper = new Particle[size][size];
-				double spacing = 1.0 / size;
-				//create particles
+				double spacing = 0.02;
+				Random r = new Random(System.currentTimeMillis());
+				// create particles
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
-						paper[i][j] = PS.createParticle(new Point3d((i+0.5) * spacing, 0.4, (j+0.5) * spacing));
+						paper[i][j] = PS.createPaperParticle(new Point3d(
+								.4 + (i + 0.5) * spacing+ (r.nextFloat() - 1) * .00005, 
+								0.5+ (r.nextFloat() - 1) * .00005, 
+								.4 + (j + 0.5)+ (r.nextFloat() - 1) * .00005
+								* spacing));
 					}
 				}
-				//connect them
+				// connect them
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
-						//springs
-						if(j > 0) {
-							SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j-1], paper[i][j], PS);
+						// springs
+						if (j > 0) {
+							SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j - 1], paper[i][j], PS);
 							PS.addForce(sfUp);
 						}
-						if(i > 0) {
-							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j], paper[i][j], PS);
+						if (i > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j], paper[i][j], PS);
 							PS.addForce(sfLeft);
 						}
-						if(i > 0 & j > 0) {
-							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j-1], paper[i][j], PS);
+						if (i > 0 & j > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j - 1], paper[i][j], PS);
 							PS.addForce(sfLeft);
 						}
-						//bending
-						if(j > 0 && j < size -1) {
-							SpringForceBending sfUp = new SpringForceBending(paper[i][j-1], paper[i][j], paper[i][j+1], PS);
-							PS.addForce(sfUp);
-						}
-						if(i > 0 && i < size -1) {
-							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j], paper[i][j], paper[i+1][j], PS);
-							PS.addForce(sfLeft);
-						}
-						if(i > 0 && i < size -1 && j > 0 && j < size -1) {
-							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j-1], paper[i][j], paper[i+1][j+1], PS);
-							PS.addForce(sfLeft);
+						// bending
+//						if (j > 0 && j < size - 1) {
+//							SpringForceBending sfUp = new SpringForceBending(paper[i][j - 1], paper[i][j],
+//									paper[i][j + 1], PS);
+//							PS.addForce(sfUp);
+//						}
+//						if (i > 0 && i < size - 1) {
+//							SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j], paper[i][j],
+//									paper[i + 1][j], PS);
+//							PS.addForce(sfLeft);
+//						}
+//						if (i > 0 && i < size - 1 && j > 0 && j < size - 1) {
+//							SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j - 1], paper[i][j],
+//									paper[i + 1][j + 1], PS);
+//							PS.addForce(sfLeft);
+//						}
+						// pinning
+						if (i == 0 && j == 0 || i == 0 && j == size - 1 || i == size - 1 && j == 0 || i == size - 1
+								&& j == size - 1) {
+							FilterPin newFilter = new FilterPin(paper[i][j]);
+							PS.addFilter(newFilter);
+							pinFilters.put(paper[i][j], newFilter);
+							paper[i][j].setPin(true);
 						}
 					}
 				}
+			} else if (key == 'g') {
+				Random r = new Random();
+				r.setSeed(System.currentTimeMillis());
+				for (int x = 0; x < 6; x++) {
+					for (int y = 0; y < 6; y++)
+						for (int z = 0; z < 6; z++)
+							PS.createGooParticle(new Point3d(.4 + x * .025 + (r.nextFloat() - 1) * .00005, 
+									.6 + y * .025 + (r.nextFloat() - 1) * .00005, 
+									.4 + z * .025 + (r.nextFloat() - 1) * .00005));
+				}
+
 			}
 		}
 
