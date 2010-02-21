@@ -226,14 +226,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		// update camera
 		persProj.apply_gluPerspective(gl);
 
-		frameNumber++;
-		if (povExport) {
-			if (frameNumber > numFrames) {
-				System.out.println("Done Running!");
-				System.exit(0);
-			}
-			writePov();
-		}
+
 
 		if (frameExporter != null) {
 			frameExporter.writeFrame();
