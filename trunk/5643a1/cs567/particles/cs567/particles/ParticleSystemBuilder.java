@@ -519,7 +519,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 			// paper maker
 			else if ( key == 'p') {
-				int size = 10;
+				int size = 20;
 				Particle[][] paper = new Particle[size][size];
 				double spacing = 1.0 / size;
 				//create particles
@@ -540,6 +540,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j], paper[i][j], PS);
 							PS.addForce(sfLeft);
 						}
+						if(i > 0 & j > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j-1], paper[i][j], PS);
+							PS.addForce(sfLeft);
+						}
 						//bending
 						if(j > 0 && j < size -1) {
 							SpringForceBending sfUp = new SpringForceBending(paper[i][j-1], paper[i][j], paper[i][j+1], PS);
@@ -547,6 +551,10 @@ public class ParticleSystemBuilder implements GLEventListener {
 						}
 						if(i > 0 && i < size -1) {
 							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j], paper[i][j], paper[i+1][j], PS);
+							PS.addForce(sfLeft);
+						}
+						if(i > 0 && i < size -1 && j > 0 && j < size -1) {
+							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j-1], paper[i][j], paper[i+1][j+1], PS);
 							PS.addForce(sfLeft);
 						}
 					}
