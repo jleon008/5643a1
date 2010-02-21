@@ -21,7 +21,7 @@ public interface Constants {
 	public static final double STIFFNESS_STRETCH = 600000.0;
 
 	/** Spring bending stiffness. */
-	public static final double STIFFNESS_BEND = 500.0;
+	public static final double STIFFNESS_BEND = 5000.0;
 
 	public static final double GRAVITY = 10.0;
 
