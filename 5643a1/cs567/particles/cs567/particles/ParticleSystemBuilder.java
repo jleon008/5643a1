@@ -551,10 +551,9 @@ public class ParticleSystemBuilder implements GLEventListener {
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
 						paper[i][j] = PS.createPaperParticle(new Point3d(
-								.4 + (i + 0.5) * spacing+ (r.nextFloat() - 1) * .00005, 
+								.4 + (i + 0.5) * spacing + (r.nextFloat() - 1) * .00005, 
 								0.5+ (r.nextFloat() - 1) * .00005, 
-								.4 + (j + 0.5)+ (r.nextFloat() - 1) * .00005
-								* spacing));
+								.4 + (j + 0.5) * spacing + (r.nextFloat() - 1) * .00005 ));
 					}
 				}
 				// connect them
