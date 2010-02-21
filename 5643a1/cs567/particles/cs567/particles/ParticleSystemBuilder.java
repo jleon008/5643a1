@@ -130,7 +130,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	/** GLEventListener implementation: Initializes JOGL renderer. */
 	public void init(GLAutoDrawable drawable) {
 		// DEBUG PIPELINE (can use to provide GL error feedback... disable for speed)
-		drawable.setGL(new DebugGL(drawable.getGL()));
+		//drawable.setGL(new DebugGL(drawable.getGL()));
 
 		GL gl = drawable.getGL();
 		System.err.println("INIT GL IS: " + gl.getClass().getName());
@@ -241,16 +241,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 			p.println("#include \"finish.inc\"");
 			p.println("background{Black}");
 			p.println("#declare Water = pigment\n{\ncolor Blue transmit 0.7\n}");
-			p.println("#declare Paper = pigment\n{\r\n" + 
-					"   gradient z\r\n" + 
-					"   color_map {\r\n" + 
-					"      [0.00, rgb <0.98, 0.98, 0.87>]\r\n" + 
-					"      [1.00, rgb <0.98, 0.98, 0.87>]\r\n" + 
-					"   }\r\n" + 
-					"\r\n" + 
-					"}");
-			p.println("camera {\nlocation <0.99,0.99,0.99>\nlook_at <0.5,0.5,0.5>\n}");
-			p.println("light_source { <0.49, .99, 0.49> color White }");
+			p.println("#declare Paper = pigment\n{\r\n" + "   gradient z\r\n" + "   color_map {\r\n"
+					+ "      [0.00, rgb <0.98, 0.98, 0.87>]\r\n" + "      [1.00, rgb <0.98, 0.98, 0.87>]\r\n"
+					+ "   }\r\n" + "\r\n" + "}");
+			p.println("camera {\nlocation <0.25,0.75,0.99>\nlook_at <0.75,0.25,0.01>\n}");
+			p.println("light_source { <0.5, .75, 0.99> color White }");
 
 			p.println("blob\n{\nthreshold .5\n");
 
@@ -258,7 +253,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z + ">, .03, 1 pigment {Water} }");
 			}
 
-			p.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
+			p
+					.println("finish {\nambient 0.0\ndiffuse 0.0\nspecular 0.4\nroughness 0.003\nreflection { 0.003, 1.0 fresnel on }\n}\ninterior { ior 1.33 }\n}");
 
 			p.println("blob\n{\nthreshold .5\n");
 
@@ -266,14 +262,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 				p.println("sphere { <" + s.x.x + "," + s.x.y + "," + s.x.z + ">, .03, 1 pigment {Paper} }");
 			}
 
-			p.println("finish {ambient 0.0\r\n" + 
-					"diffuse 0.1\r\n" + 
-					"specular 0.1\r\n" + 
-					"roughness 0.1\r\n" + 
-					"reflection { 0.001, 1.0 fresnel on }\r\n" + 
-					"}\r\n" + 
-					"interior { ior 1.33 }\n" +
-					"}");
+			p.println("finish {ambient 0.0\r\n" + "diffuse 0.1\r\n" + "specular 0.1\r\n" + "roughness 0.1\r\n"
+					+ "reflection { 0.001, 1.0 fresnel on }\r\n" + "}\r\n" + "interior { ior 1.33 }\n" + "}");
 
 			p.println("box {\n<0,0,0>, <1,1,1>\ntexture { White_Marble scale 0.5 }\n}");
 			p.close();
@@ -547,66 +537,75 @@ public class ParticleSystemBuilder implements GLEventListener {
 				Particle[][] paper = new Particle[size][size];
 				double spacing = 0.02;
 				Random r = new Random(System.currentTimeMillis());
-				// create particles
-				for (int i = 0; i < size; i++) {
-					for (int j = 0; j < size; j++) {
-						paper[i][j] = PS.createPaperParticle(new Point3d(
-								.4 + (i + 0.5) * spacing + (r.nextFloat() - 1) * .00005, 
-								0.5+ (r.nextFloat() - 1) * .00005, 
-								.4 + (j + 0.5) * spacing + (r.nextFloat() - 1) * .00005 ));
+				for (int kerran = 0; kerran < 3; kerran++) {
+					// create particles
+					for (int i = 0; i < size; i++) {
+						for (int j = 0; j < size; j++) {
+							paper[i][j] = PS.createPaperParticle(new Point3d(
+									.3 + kerran*.1 + (i + 0.5) * spacing
+									+ (r.nextFloat() - 1) * .00005, 
+									0.5 - kerran*.1 + (r.nextFloat() - 1) * .00005, 
+									.2 + (j + 0.5)
+									* spacing + (r.nextFloat() - 1) * .00005));
+						}
 					}
-				}
-				// connect them
-				for (int i = 0; i < size; i++) {
-					for (int j = 0; j < size; j++) {
-						// springs
-						if (j > 0) {
-							SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j - 1], paper[i][j], PS);
-							PS.addForce(sfUp);
-						}
-						if (i > 0) {
-							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j], paper[i][j], PS);
-							PS.addForce(sfLeft);
-						}
-						if (i > 0 & j > 0) {
-							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j - 1], paper[i][j], PS);
-							PS.addForce(sfLeft);
-						}
-						// bending
-//						if (j > 0 && j < size - 1) {
-//							SpringForceBending sfUp = new SpringForceBending(paper[i][j - 1], paper[i][j],
-//									paper[i][j + 1], PS);
-//							PS.addForce(sfUp);
-//						}
-//						if (i > 0 && i < size - 1) {
-//							SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j], paper[i][j],
-//									paper[i + 1][j], PS);
-//							PS.addForce(sfLeft);
-//						}
-//						if (i > 0 && i < size - 1 && j > 0 && j < size - 1) {
-//							SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j - 1], paper[i][j],
-//									paper[i + 1][j + 1], PS);
-//							PS.addForce(sfLeft);
-//						}
-						// pinning
-						if (i == 0 && j == 0 || i == 0 && j == size - 1 || i == size - 1 && j == 0 || i == size - 1
-								&& j == size - 1) {
-							FilterPin newFilter = new FilterPin(paper[i][j]);
-							PS.addFilter(newFilter);
-							pinFilters.put(paper[i][j], newFilter);
-							paper[i][j].setPin(true);
+					// connect them
+					for (int i = 0; i < size; i++) {
+						for (int j = 0; j < size; j++) {
+							// springs
+							if (j > 0) {
+								SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j - 1], paper[i][j], PS);
+								PS.addForce(sfUp);
+							}
+							if (i > 0) {
+								SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j], paper[i][j], PS);
+								PS.addForce(sfLeft);
+							}
+							if (i > 0 & j > 0) {
+								SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i - 1][j - 1],
+										paper[i][j], PS);
+								PS.addForce(sfLeft);
+							}
+							// bending
+							// if (j > 0 && j < size - 1) {
+							// SpringForceBending sfUp = new SpringForceBending(paper[i][j - 1], paper[i][j],
+							// paper[i][j + 1], PS);
+							// PS.addForce(sfUp);
+							// }
+							// if (i > 0 && i < size - 1) {
+							// SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j], paper[i][j],
+							// paper[i + 1][j], PS);
+							// PS.addForce(sfLeft);
+							// }
+							// if (i > 0 && i < size - 1 && j > 0 && j < size - 1) {
+							// SpringForceBending sfLeft = new SpringForceBending(paper[i - 1][j - 1], paper[i][j],
+							// paper[i + 1][j + 1], PS);
+							// PS.addForce(sfLeft);
+							// }
+							// pinning
+							if (i == 0 && j == 0 || i == 0 && j == size - 1 || i == size - 1 && j == 0 || i == size - 1
+									&& j == size - 1) {
+								FilterPin newFilter = new FilterPin(paper[i][j]);
+								PS.addFilter(newFilter);
+								pinFilters.put(paper[i][j], newFilter);
+								paper[i][j].setPin(true);
+							}
 						}
 					}
 				}
 			} else if (key == 'g') {
 				Random r = new Random();
 				r.setSeed(System.currentTimeMillis());
-				for (int x = 0; x < 6; x++) {
-					for (int y = 0; y < 6; y++)
-						for (int z = 0; z < 6; z++)
-							PS.createGooParticle(new Point3d(.4 + x * .025 + (r.nextFloat() - 1) * .00005, 
-									.6 + y * .025 + (r.nextFloat() - 1) * .00005, 
-									.4 + z * .025 + (r.nextFloat() - 1) * .00005));
+				for (int x = 0; x < 8; x++) {
+					for (int y = 0; y < 8; y++)
+						for (int z = 0; z < 8; z++)
+							PS
+									.createGooParticle(new Point3d(
+											.4 + x * .025 + (r.nextFloat() - 1) * .00005, 
+											.6 + y
+											* .025 + (r.nextFloat() - 1) * .00005, 
+											.2 + z * .025 + (r.nextFloat() - 1)
+											* .00005));
 				}
 
 			}
@@ -984,7 +983,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				psb.povExport = true;
 				psb.numFrames = Integer.parseInt(args[0]);
 				N_STEPS_PER_FRAME = Integer.parseInt(args[1]);
-				psb.outFile = args[2];
+				psb.outFile = args[2] +"_" + (int)((System.currentTimeMillis() / 1000) % Math.pow(Math.PI, 10))  + "_";
 			}
 
 			psb.start();
