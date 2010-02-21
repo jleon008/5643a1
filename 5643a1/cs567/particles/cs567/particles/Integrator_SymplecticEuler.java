@@ -9,7 +9,7 @@ public class Integrator_SymplecticEuler implements Integrator {
 
 		for (Particle p : P) {
 			// velocity = accel * dt
-			p.v.scaleAdd(timestep, p.f, p.v); // p.v += timestep * p.f;
+			p.v.scaleAdd(timestep/p.m, p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (zero out v):
 			p.xOld.set(p.x);

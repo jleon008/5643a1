@@ -23,6 +23,8 @@ public class Particle {
 	/** If true, then particle is pinned in space. */
 	private boolean pin = false;
 
+	public double radius = 0.015;
+	
 	/** Default mass. */
 	double m = Constants.PARTICLE_MASS;
 
@@ -55,7 +57,7 @@ public class Particle {
 		if (PARTICLE_DISPLAY_LIST < 0) {// MAKE DISPLAY LIST:
 			int displayListIndex = gl.glGenLists(1);
 			gl.glNewList(displayListIndex, GL.GL_COMPILE);
-			drawParticle(gl, new Point3d());// /particle at origin
+			drawParticle(gl, new Point3d(), radius);// /particle at origin
 			gl.glEndList();
 			System.out.println("MADE LIST " + displayListIndex + " : "
 					+ gl.glIsList(displayListIndex));
@@ -83,6 +85,7 @@ public class Particle {
 		gl.glPopMatrix();
 	}
 
+
 	/** Specifies whether particle should be drawn highlighted. */
 	public void setHighlight(boolean highlight) {
 		this.highlight = highlight;
@@ -109,8 +112,8 @@ public class Particle {
 	/**
 	 * Draws a canonical circular particle.
 	 */
-	private static void drawParticle(GL gl, Point3d p) {
-		double radius = PARTICLE_RADIUS;
+	private static void drawParticle(GL gl, Point3d p, double r) {
+		double radius = r;
 
 		double vectorY1 = p.y;
 		double vectorX1 = p.x;

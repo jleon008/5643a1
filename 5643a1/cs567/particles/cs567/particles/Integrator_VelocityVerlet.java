@@ -9,9 +9,9 @@ public class Integrator_VelocityVerlet implements Integrator {
 		for (Particle p : P) {
 			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, p.x); // p.x += timestep * p.v;
-			p.x.scaleAdd(1.0/2.0*timestep*timestep, p.f, p.x);
+			p.x.scaleAdd(1.0/(2.0*p.m)*timestep*timestep, p.f, p.x);
 			
-			p.v.scaleAdd(timestep, p.f, p.v); // p.v += timestep * p.f;
+			p.v.scaleAdd(timestep/p.m, p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
 
