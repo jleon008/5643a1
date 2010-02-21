@@ -19,8 +19,7 @@ import com.sun.opengl.util.*;
 /**
  * CS567: Assignment #1 "Particle Systems"
  * 
- * main() entry point class that initializes ParticleSystem, OpenGL rendering, and GUI that manages
- * GUI/mouse events.
+ * main() entry point class that initializes ParticleSystem, OpenGL rendering, and GUI that manages GUI/mouse events.
  * 
  * Spacebar toggles simulation advance.
  * 
@@ -40,7 +39,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	JFrame frame = null;
 
 	private int width, height;
-	
+
 	private int frameNumber = 0;
 
 	/** The single ParticleSystem reference. */
@@ -62,23 +61,20 @@ public class ParticleSystemBuilder implements GLEventListener {
 		 for (int i = 0; i < 5; i++) {
 			 for (int z = 0; z < 1 ; z ++)
 				 for (int e = 0; e < 10; e++) 
-					 PS.createGooParticle(new Point3d(.25 + i*.02 + (r.nextFloat() - 1)*.00005, .5 + e*.02 + (r.nextFloat() - 1)*.00005, .5 + z*.02)); }
+					 PS.createGooParticle(new Point3d(.27 + i*.02 + (r.nextFloat() - 1)*.00005, .5 + e*.02 + (r.nextFloat() - 1)*.00005, .5 + z*.02)); }
 
 		 for (int u = 0; u < 10; u++)
 			 PS.createPaperParticle(new Point3d(.2 + u*.02, .45, .5));
+		
+		PS.addFilter(new FilterPlane(new Vector3d(0, .5, .5), new Vector3d(1, 0, 0), PS.getParticles(), new Vector3d(0,
+				.5, 0), new Vector3d(0, 0, .5)));
+
 		I = new Integrator_Midpoint();
-		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS
-				.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(0, .5, .5), new Vector3d(1, 0, 0), PS
-				.getParticles(), new Vector3d(0, .5, 0), new Vector3d(0, 0, .5)));
-		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS
-				.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS
-				.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 1), new Vector3d(0, 0, -1), PS
-				.getParticles()));
-		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), PS
-				.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(0, -1, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 0), new Vector3d(-1, 0, 0), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(1, 1, 1), new Vector3d(0, 0, -1), PS.getParticles()));
+		PS.addFilter(new FilterPlane(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), PS.getParticles()));
 	}
 
 	/**
@@ -133,7 +129,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 	/** GLEventListener implementation: Initializes JOGL renderer. */
 	public void init(GLAutoDrawable drawable) {
 		// DEBUG PIPELINE (can use to provide GL error feedback... disable for speed)
-		// drawable.setGL(new DebugGL(drawable.getGL()));
+		drawable.setGL(new DebugGL(drawable.getGL()));
 
 		GL gl = drawable.getGL();
 		System.err.println("INIT GL IS: " + gl.getClass().getName());
@@ -182,7 +178,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
 		// / DRAW COMPUTATIONAL CELL BOUNDARY:
-		{
+		if (Constants.WALLS_ON) {
 			// front
 			gl.glBegin(GL.GL_LINE_STRIP);
 			gl.glColor3f(1, 1, 1);
@@ -230,8 +226,15 @@ public class ParticleSystemBuilder implements GLEventListener {
 		// update camera
 		persProj.apply_gluPerspective(gl);
 
+		frameNumber++;
+		if (povExport) {
+			if (frameNumber > numFrames) {
+				System.out.println("Done Running!");
+				System.exit(0);
+			}
+			writePov();
+		}
 
-		
 		if (frameExporter != null) {
 			frameExporter.writeFrame();
 		}
@@ -297,17 +300,13 @@ public class ParticleSystemBuilder implements GLEventListener {
 
 			ButtonGroup buttonGroup = new ButtonGroup();
 			ButtonGroup integratorGroup = new ButtonGroup();
-			JToggleButton[] buttons = { new JToggleButton("Reset", false),
-					new JRadioButton("Create Particle", true),
-					new JRadioButton("Move Particle", false),
-					new JRadioButton("Create Spring", false),
-					new JRadioButton("Create Hair", false),
-					new JRadioButton("Pin Constraint", false) };
+			JToggleButton[] buttons = { new JToggleButton("Reset", false), new JRadioButton("Create Particle", true),
+					new JRadioButton("Move Particle", false), new JRadioButton("Create Spring", false),
+					new JRadioButton("Create Hair", false), new JRadioButton("Pin Constraint", false) };
 			// new JRadioButton ("Rigid Constraint", false)};
 
 			JToggleButton[] integrators = { new JRadioButton("Forward Euler", true),
-					new JRadioButton("Midpoint Method", false),
-					new JRadioButton("Symplectic Euler", false),
+					new JRadioButton("Midpoint Method", false), new JRadioButton("Symplectic Euler", false),
 					new JRadioButton("Velocity Verlet", false), };
 
 			for (int i = 0; i < buttons.length; i++) {
@@ -348,14 +347,12 @@ public class ParticleSystemBuilder implements GLEventListener {
 				}
 
 				// / TODO: PROCESS COLLISIONS HERE:
-				
 				frameNumber++;
 
 				if (povExport) {
 					if (frameNumber > numFrames) System.exit(0);
 					writePov();
 				}
-
 			}
 
 			// Draw particles, springs, etc.
@@ -372,8 +369,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		 */
 		class TaskSelector implements ActionListener {
 			/**
-			 * Resets ParticleSystem to undeformed/material state, disables the simulation, and
-			 * removes the active Task.
+			 * Resets ParticleSystem to undeformed/material state, disables the simulation, and removes the active Task.
 			 */
 			void resetToRest() {
 				PS.reset();// synchronized
@@ -469,8 +465,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 		}
 
 		/**
-		 * Handles keyboard events, e.g., spacebar toggles simulation/pausing, and escape resets the
-		 * current Task.
+		 * Handles keyboard events, e.g., spacebar toggles simulation/pausing, and escape resets the current Task.
 		 */
 		public void dispatchKey(char key, KeyEvent e) {
 			// System.out.println("CHAR="+key+", keyCode="+e.getKeyCode()+", e="+e);
@@ -492,8 +487,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 				frameExporter = ((frameExporter == null) ? (new FrameExporter()) : null);
 				System.out.println("'e' : frameExporter = " + frameExporter);
 			} else if (key == '=') {// increase nsteps
-				N_STEPS_PER_FRAME = Math.max((int) (1.05 * N_STEPS_PER_FRAME),
-						N_STEPS_PER_FRAME + 1);
+				N_STEPS_PER_FRAME = Math.max((int) (1.05 * N_STEPS_PER_FRAME), N_STEPS_PER_FRAME + 1);
 				System.out.println("N_STEPS_PER_FRAME=" + N_STEPS_PER_FRAME + ";  dt="
 						+ (DT / (double) N_STEPS_PER_FRAME));
 			} else if (key == '-') {// decrease nsteps
@@ -514,19 +508,83 @@ public class ParticleSystemBuilder implements GLEventListener {
 			} else if (key == 'x') {
 				persProj.resetCamera();
 			}
-			// hair performance tests //TODO this
+			// TODO hair performance tests
 			else if (key == 'h') {
-				CreateHairTask task = new CreateHairTask();
-				double x = 0.1, y = 0.1, z = 0.5;
-				for (int i = 1; i <= 4; i++) {
-					task.addParticle(new Point3d(x * 2 * i, 5 * y + y * 2 * (i % 2), z));
+				for (int i = 0; i < 2; i++) {
+					CreateHairTask task = new CreateHairTask();
+					double x = 0.25 + .5 * i;
+					double y = 0.9;
+					double z = 0.5;
+					task.addParticle(new Point3d(x, y, z));
+					new PinConstraintTask().Pin(new Point3d(x, y, z));
+					for (int j = 0; j < 4; j++) {
+						// x = (x + 0.1*(i%2) - 0.05);
+						y = (y - 0.1 * (i % 2) - 0.05);
+						// z = (z + 0.1*(i%2) - 0.05);
+						task.addParticle(new Point3d(x, y, z));
+					}
+
+				}
+			} else if (key == 'j') {
+				for (int i = 0; i < 2; i++) {
+					pulls[i] = new DragParticleTask();
+					pulls[i].StartForce(new Point3d(0.3 + .4 * i, 0.7, 0.5));
+				}
+			} else if (key == 'k') {
+				for (int i = 0; i < 2; i++) {
+					pulls[i].EndForce();
+				}
+			}
+			// paper maker
+			else if ( key == 'p') {
+				int size = 20;
+				Particle[][] paper = new Particle[size][size];
+				double spacing = 1.0 / size;
+				//create particles
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						paper[i][j] = PS.createParticle(new Point3d((i+0.5) * spacing, 0.4, (j+0.5) * spacing));
+					}
+				}
+				//connect them
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						//springs
+						if(j > 0) {
+							SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j-1], paper[i][j], PS);
+							PS.addForce(sfUp);
+						}
+						if(i > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j], paper[i][j], PS);
+							PS.addForce(sfLeft);
+						}
+						if(i > 0 & j > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j-1], paper[i][j], PS);
+							PS.addForce(sfLeft);
+						}
+						//bending
+						if(j > 0 && j < size -1) {
+							SpringForceBending sfUp = new SpringForceBending(paper[i][j-1], paper[i][j], paper[i][j+1], PS);
+							PS.addForce(sfUp);
+						}
+						if(i > 0 && i < size -1) {
+							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j], paper[i][j], paper[i+1][j], PS);
+							PS.addForce(sfLeft);
+						}
+						if(i > 0 && i < size -1 && j > 0 && j < size -1) {
+							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j-1], paper[i][j], paper[i+1][j+1], PS);
+							PS.addForce(sfLeft);
+						}
+					}
 				}
 			}
 		}
 
+		DragParticleTask[] pulls = new DragParticleTask[2];
+
 		/**
-		 * "Task" command base-class extended to support building/interaction via mouse interface.
-		 * All objects extending Task are implemented here as inner classes for simplicity.
+		 * "Task" command base-class extended to support building/interaction via mouse interface. All objects extending
+		 * Task are implemented here as inner classes for simplicity.
 		 */
 		abstract class Task implements MouseListener, MouseMotionListener {
 			/**
@@ -649,8 +707,8 @@ public class ParticleSystemBuilder implements GLEventListener {
 			}
 
 			/**
-			 * Find nearest particle, and create a SpringForce2Particle when mouse released, unless
-			 * nearest particle, p2, is same as p1.
+			 * Find nearest particle, and create a SpringForce2Particle when mouse released, unless nearest particle,
+			 * p2, is same as p1.
 			 */
 			public void mouseReleased(MouseEvent e) {
 				cursorP = getPoint3d(e);// cursor position
@@ -699,11 +757,7 @@ public class ParticleSystemBuilder implements GLEventListener {
 			public void mousePressed(MouseEvent e) {
 				// FIND NEAREST PARTICLE:
 				cursorP = getPoint3d(e);// cursor position
-				dragParticle = PS.getNearestParticle(cursorP);
-
-				// / START APPLYING FORCE:
-				springForce = new SpringForce1Particle(dragParticle, cursorP, PS);
-				PS.addForce(springForce);// to be removed later
+				StartForce(cursorP);
 			}
 
 			/** Cancel any particle dragging and forces. */
@@ -726,6 +780,19 @@ public class ParticleSystemBuilder implements GLEventListener {
 				dragParticle = null;
 
 				// / CANCEL/REMOVE FORCE:
+				EndForce();
+
+			}
+
+			public void StartForce(Point3d x) {
+				dragParticle = PS.getNearestParticle(x);
+
+				// / START APPLYING FORCE:
+				springForce = new SpringForce1Particle(dragParticle, x, PS);
+				PS.addForce(springForce);// to be removed later
+			}
+
+			public void EndForce() {
 				PS.removeForce(springForce);
 			}
 
@@ -776,7 +843,11 @@ public class ParticleSystemBuilder implements GLEventListener {
 			/** Toggle pin constraint on nearest particle. */
 			public void mousePressed(MouseEvent e) {
 				Point3d cursorP = getPoint3d(e);
-				Particle p1 = PS.getNearestParticle(cursorP); // / = constant
+				Pin(cursorP);
+			}
+
+			public void Pin(Point3d x) {
+				Particle p1 = PS.getNearestParticle(x); // / = constant
 				// (since at
 				// rest)
 				if (p1 != null) {// TOGGLE PIN:
@@ -876,14 +947,14 @@ public class ParticleSystemBuilder implements GLEventListener {
 	public static void main(String[] args) {
 		try {
 			ParticleSystemBuilder psb = new ParticleSystemBuilder();
-			
+
 			if (args.length != 0) {
 				psb.povExport = true;
 				psb.numFrames = Integer.parseInt(args[0]);
 				N_STEPS_PER_FRAME = Integer.parseInt(args[1]);
 				psb.outFile = args[2];
 			}
-			
+
 			psb.start();
 
 		} catch (Exception e) {
