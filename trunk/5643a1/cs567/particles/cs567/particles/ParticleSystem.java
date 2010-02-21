@@ -26,6 +26,9 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 
 	/** List of Particle objects. */
 	ArrayList<Particle> P = new ArrayList<Particle>();
+	
+	public ArrayList<Particle> Goo = new ArrayList<Particle>();
+	public ArrayList<Particle> Paper = new ArrayList<Particle>();
 
 	/** List of Force objects. */
 	ArrayList<Force> F = new ArrayList<Force>();
@@ -68,6 +71,20 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 	public synchronized Particle createParticle(Point3d p0) {
 		Particle newP = new Particle(p0);
 		P.add(newP);
+		return newP;
+	}
+	
+	public synchronized Particle createGooParticle(Point3d p0) {
+		Particle newP = new GooParticle(p0);
+		P.add(newP);
+		Goo.add(newP);
+		return newP;
+	}
+	
+	public synchronized Particle createPaperParticle(Point3d p0) {
+		Particle newP = new PaperParticle(p0);
+		P.add(newP);
+		Paper.add(newP);
 		return newP;
 	}
 

@@ -14,7 +14,7 @@ public class GravitationalForce implements Force {
 	public void applyForce() {
 		Vector3d g = new Vector3d(0, -Constants.GRAVITY, 0);
 		for (Particle p : PS.P) {
-			p.f.add(g);
+			p.f.scaleAdd(p.m,g, p.f);
 		}
 
 	}

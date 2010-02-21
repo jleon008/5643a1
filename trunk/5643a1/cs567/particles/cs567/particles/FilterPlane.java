@@ -39,14 +39,14 @@ public class FilterPlane extends Filter {
 		for (Particle p : targets) {
 			tester.sub(p.x, reference);
 			double over = tester.dot(normal);
-			if (over <= Particle.PARTICLE_RADIUS) {
+			if (over <= p.radius) {
 				if (bounded) {
 					Vector3d bounder = new Vector3d();
 					bounder.set(tester);
 					if (Math.abs(bounder.dot(height)/height.length()) > height.length()) return;
 					if (Math.abs(bounder.dot(width)/width.length()) > width.length()) return;
 				}
-				p.x.scaleAdd(-(over - Particle.PARTICLE_RADIUS), normal, p.x);
+				p.x.scaleAdd(-(over - p.radius), normal, p.x);
 				tester.sub(p.x, reference);
 				tester.scaleAdd(1, p.v, tester);
 				if (tester.dot(normal) < over) {

@@ -22,7 +22,7 @@ public class Integrator_Midpoint implements Integrator {
 			p.xOld.set(p.x);
 			// do half time step of forward euler
 			p.x.scaleAdd(timestep / 2, p.v, p.x); // p.x += timestep * p.v;
-			p.v.scaleAdd(timestep / 2, p.f, p.v); // p.v += timestep * p.f;
+			p.v.scaleAdd(timestep / (2*p.m), p.f, p.v); // p.v += timestep * p.f;
 
 			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v):
 		}
@@ -35,7 +35,7 @@ public class Integrator_Midpoint implements Integrator {
 		for (Particle p : P) {
 			p.xOld.set(p.x);
 			p.x.scaleAdd(timestep, p.v, x_original.get(p));
-			p.v.scaleAdd(timestep, p.f, v_original.get(p));
+			p.v.scaleAdd(timestep / p.m, p.f, v_original.get(p));
 
 			// / APPLY PIN CONSTRAINTS (set p=p0, and zero out v)
 		}

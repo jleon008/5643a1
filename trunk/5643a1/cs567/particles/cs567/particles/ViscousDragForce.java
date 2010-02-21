@@ -15,7 +15,7 @@ public class ViscousDragForce implements Force {
 		Vector3d vdf = new Vector3d();
 		for (Particle p : PS.P) {
 			vdf.set(p.v);
-			vdf.scale(-Constants.DAMPING_MASS);
+			vdf.scale(-Constants.DAMPING_MASS*p.m);
 			p.f.add(vdf);
 		}
 
