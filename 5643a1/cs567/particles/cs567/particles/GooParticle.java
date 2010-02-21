@@ -9,7 +9,7 @@ public class GooParticle extends Particle {
 	GooParticle(Point3d x0) {
 		super(x0);
 		radius = .015;
-		m = .1;
+		m = 1;
 	}
 	
 	@Override
@@ -34,8 +34,8 @@ public class GooParticle extends Particle {
 			double b1 = 1;
 			double b2 = b1; //*Math.pow(r0, n-m);
 			double sumR = r0;
-			double sr = 150;
-			double sd = 50;
+			double sr = 100;
+			double sd = 25;
 			
 			/*sr = dSquared/(cr*cr*(sumR)*(sumR));
 			sd = dSquared/(cd*cd*(sumR)*(sumR));
