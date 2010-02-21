@@ -517,6 +517,41 @@ public class ParticleSystemBuilder implements GLEventListener {
 					pulls[i].EndForce();
 				}
 			}
+			// paper maker
+			else if ( key == 'p') {
+				int size = 10;
+				Particle[][] paper = new Particle[size][size];
+				double spacing = 1.0 / size;
+				//create particles
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						paper[i][j] = PS.createParticle(new Point3d((i+0.5) * spacing, 0.4, (j+0.5) * spacing));
+					}
+				}
+				//connect them
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						//springs
+						if(j > 0) {
+							SpringForce2Particle sfUp = new SpringForce2Particle(paper[i][j-1], paper[i][j], PS);
+							PS.addForce(sfUp);
+						}
+						if(i > 0) {
+							SpringForce2Particle sfLeft = new SpringForce2Particle(paper[i-1][j], paper[i][j], PS);
+							PS.addForce(sfLeft);
+						}
+						//bending
+						if(j > 0 && j < size -1) {
+							SpringForceBending sfUp = new SpringForceBending(paper[i][j-1], paper[i][j], paper[i][j+1], PS);
+							PS.addForce(sfUp);
+						}
+						if(i > 0 && i < size -1) {
+							SpringForceBending sfLeft = new SpringForceBending(paper[i-1][j], paper[i][j], paper[i+1][j], PS);
+							PS.addForce(sfLeft);
+						}
+					}
+				}
+			}
 		}
 
 		DragParticleTask[] pulls = new DragParticleTask[2];
