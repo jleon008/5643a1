@@ -25,8 +25,6 @@ public class ForceRunner implements Callable<Object> {
 	private void InterParticleForces() {
 		if (Constants.PARTICLE_PARTICLE_ON) {
 			
-			//keep this consistent with particle system TODO refactor it
-			
 			int tot = (int) Math.ceil(1.0 / ParticleSystem.INTERACTION_RADIUS);
 
 

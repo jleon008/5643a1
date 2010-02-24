@@ -75,6 +75,11 @@ public class Particle {
 			c.y = 1;
 			c.z = 0;
 		}
+		if(GooParticle.class.isInstance(this)) {
+			c.x = 0;
+			c.y = 0;
+			//now its blue
+		}
 
 		gl.glColor3f(c.x, c.y, c.z);
 

@@ -34,7 +34,7 @@ public class GooParticle extends Particle {
 			double b1 = 1;
 			double b2 = b1; //*Math.pow(r0, n-m);
 			double sumR = r0;
-			double sr = 100;
+			double sr = 60;
 			double sd = 25;
 			
 			/*sr = dSquared/(cr*cr*(sumR)*(sumR));

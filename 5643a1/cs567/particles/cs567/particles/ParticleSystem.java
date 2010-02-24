@@ -23,8 +23,6 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 
 	static double INTERACTION_RADIUS = .03;
 	static int size = (int) Math.ceil(1.0 / INTERACTION_RADIUS);
-	// HashSet[][][] particleGrid = new
-	// HashSet[(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)][(int)Math.ceil(1.0/INTERACTION_RADIUS)];
 	HashSet[] particleGrid = new HashSet[size * size * size];
 
 	/** Current simulation time. */
@@ -44,8 +42,7 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 	// ArrayList<Constraint> C = new ArrayList<Constraint>();
 
 	ArrayList<ForceRunner> forceRunners = new ArrayList<ForceRunner>();
-	// ArrayList<Thread> forceThreads = new ArrayList<Thread>();
-	final int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
+	final int THREAD_COUNT = Runtime.getRuntime().availableProcessors()+1;
 	ExecutorService executor = Executors.newCachedThreadPool();
 
 	/** Basic constructor. */
@@ -54,8 +51,6 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 		for (int i = 0; i < THREAD_COUNT; i++) {
 			ForceRunner fr = new ForceRunner();
 			forceRunners.add(fr);
-			// Thread t = new Thread(fr);
-			// forceThreads.add(t);
 		}
 
 		int tot = (int) Math.ceil(1.0 / INTERACTION_RADIUS);
@@ -266,10 +261,6 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 					fr.F = this.F.subList(fromIndex, toIndex);
 				}
 
-				// run it
-				// forceThreads.get(i).start();
-				// executor.execute(fr);
-				// executor.submit(fr);
 			}
 
 			List<Future<Object>> status = null;
@@ -299,8 +290,6 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 		} else {
 
 			if (Constants.PARTICLE_PARTICLE_ON) {
-
-				// keep this consistent with particle system TODO refactor it
 
 				int tot = (int) Math.ceil(1.0 / ParticleSystem.INTERACTION_RADIUS);
 
