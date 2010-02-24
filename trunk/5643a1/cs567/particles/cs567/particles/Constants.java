@@ -10,7 +10,7 @@ public interface Constants {
 	public static final double RESTITUTION_COEFF = 0.3;
 
 	/** Mass-proportional damping. */
-	public static final double DAMPING_MASS = 2.0;
+	public static final double DAMPING_MASS = 1.0;
 
 	public static final double SPRING_DAMPING = 5.0;
 
@@ -18,7 +18,7 @@ public interface Constants {
 	public static final double PARTICLE_MASS = 1.0;
 
 	/** Spring stretching stiffness. */
-	public static final double STIFFNESS_STRETCH = 600000.0;
+	public static final double STIFFNESS_STRETCH = 50000.0;
 
 	/** Spring bending stiffness. */
 	public static final double STIFFNESS_BEND = 5000.0;
