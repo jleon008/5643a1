@@ -246,7 +246,7 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 					int toIndex = fromIndex + chunkSize;
 
 					// catch rounding error and off by one error on last chunk
-					if (P.size() - toIndex < chunkSize) {
+					if (i == THREAD_COUNT - 1) {
 						toIndex = P.size();
 					}
 					fr.P = this.P.subList(fromIndex, toIndex);
@@ -260,8 +260,8 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 					int toIndex = fromIndex + chunkSize;
 
 					// catch rounding error and off by one error on last chunk
-					if (F.size() - toIndex < chunkSize) {
-						toIndex = F.size() - 1;
+					if (i == THREAD_COUNT - 1) {
+						toIndex = F.size();
 					}
 					fr.F = this.F.subList(fromIndex, toIndex);
 				}
@@ -294,6 +294,7 @@ public class ParticleSystem implements DynamicalSystem // implements Serializabl
 				}
 
 			}
+			
 
 		} else {
 
